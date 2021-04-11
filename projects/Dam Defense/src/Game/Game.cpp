@@ -2725,6 +2725,88 @@ void Game::ImGui()
 	
 	ImGui::Text("Point Lights");
 
+	std::vector<glm::vec3> lightPositions = std::vector<glm::vec3>(m_Lights.size());
+	std::vector<glm::vec3> lightColors = std::vector<glm::vec3>(m_Lights.size());
+	std::vector<float> lightAmbStr = std::vector<float>(m_Lights.size());
+	std::vector<float> lightSpecStr = std::vector<float>(m_Lights.size());
+	std::vector<float> lightConstAtten = std::vector<float>(m_Lights.size());
+	std::vector<float> lightLineAtten = std::vector<float>(m_Lights.size());
+	std::vector<float> lightQuadAtten = std::vector<float>(m_Lights.size());
+	std::vector<bool> lightVolumeShouldRender = std::vector<bool>(m_Lights.size());
+	std::vector<float> lightVolumeTransparency = std::vector<float>(m_Lights.size());
+
+	for (int i = 0; i < m_Lights.size(); i++) {
+		std::string lightName = "Point Light " + std::to_string(i);
+		if (ImGui::CollapsingHeader(lightName.c_str())) {
+			lightPositions[i] = Get<TTN_Light>(m_Lights[i]).GetPosition();
+			std::string posName = "Position " + std::to_string(i);
+			if (ImGui::SliderFloat3(posName.c_str(), glm::value_ptr(lightPositions[i]), -15.0f, 15.0f)) {
+				Get<TTN_Light>(m_Lights[i]).SetPosition(lightPositions[i]);
+			}
+
+			lightColors[i] = Get<TTN_Light>(m_Lights[i]).GetColor();
+			std::string colorName = "Color " + std::to_string(i);
+			if (ImGui::ColorEdit3(colorName.c_str(), glm::value_ptr(lightColors[i]))) {
+				Get<TTN_Light>(m_Lights[i]).SetColor(lightColors[i]);
+			}
+
+			lightAmbStr[i] = Get<TTN_Light>(m_Lights[i]).GetAmbientStrength();
+			std::string ambStrName = "Ambient Strength " + std::to_string(i);
+			if (ImGui::SliderFloat(ambStrName.c_str(), &lightAmbStr[i], 0.0f, 5.0f)) {
+				Get<TTN_Light>(m_Lights[i]).SetAmbientStrength(lightAmbStr[i]);
+			}
+
+			lightSpecStr[i] = Get<TTN_Light>(m_Lights[i]).GetSpecularStrength();
+			std::string specStrName = "Specular Strength " + std::to_string(i);
+			if (ImGui::SliderFloat(specStrName.c_str(), &lightSpecStr[i], 0.0f, 5.0f)) {
+				Get<TTN_Light>(m_Lights[i]).SetSpecularStrength(lightSpecStr[i]);
+			}
+
+			lightConstAtten[i] = Get<TTN_Light>(m_Lights[i]).GetConstantAttenuation();
+			std::string constAttenName = "Attentuation Constant " + std::to_string(i);
+			if (ImGui::SliderFloat(constAttenName.c_str(), &lightConstAtten[i], 0.0f, 10.0f)) {
+				Get<TTN_Light>(m_Lights[i]).SetConstantAttenuation(lightConstAtten[i]);
+			}
+
+			lightLineAtten[i] = Get<TTN_Light>(m_Lights[i]).GetLinearAttenuation();
+			std::string lineAttenName = "Attentuation Linear " + std::to_string(i);
+			if (ImGui::SliderFloat(lineAttenName.c_str(), &lightLineAtten[i], 0.0f, 10.0f)) {
+				Get<TTN_Light>(m_Lights[i]).SetLinearAttenuation(lightLineAtten[i]);
+			}
+
+			lightQuadAtten[i] = Get<TTN_Light>(m_Lights[i]).GetQuadraticAttenuation();
+			std::string quadAttenName = "Attentuation Quadratic " + std::to_string(i);
+			if (ImGui::SliderFloat(quadAttenName.c_str(), &lightQuadAtten[i], 0.0f, 10.0f)) {
+				Get<TTN_Light>(m_Lights[i]).SetQuadraticAttenuation(lightQuadAtten[i]);
+			}
+
+			lightVolumeShouldRender[i] = Get<TTN_Light>(m_Lights[i]).GetVolumeShouldRender();
+			bool temp = lightVolumeShouldRender[i];
+			std::string volumeShouldrenderName = "Volume " + std::to_string(i) + " should render";
+			if (ImGui::Checkbox(volumeShouldrenderName.c_str(), &temp)) {
+				lightVolumeShouldRender[i] = temp;
+				Get<TTN_Light>(m_Lights[i]).SetVolumeShouldRender(lightVolumeShouldRender[i]);
+			}
+
+			lightVolumeTransparency[i] = Get<TTN_Light>(m_Lights[i]).GetVolumeTransparency();
+			std::string lightVolumeAlphaName = "Volume " + std::to_string(i) + "'s transparency";
+			if (ImGui::SliderFloat(lightVolumeAlphaName.c_str(), &lightVolumeTransparency[i], 0.0f, 1.0f)) {
+				Get<TTN_Light>(m_Lights[i]).SetVolumeTransparency(lightVolumeTransparency[i]);
+			}
+		}
+	}
+
+	if (ImGui::Button("Make new point light")) {
+		entt::entity newLight = CreateEntity();
+		m_Lights.push_back(newLight);
+
+		TTN_Light lightLight = TTN_Light(glm::vec3(1.0f), 0.5f, 0.5f, 0.0f, 2.0f, 8.0f);
+		lightLight.SetPosition(glm::vec3(0.0f, 1.0f, 5.0f));
+		lightLight.SetVolumeShouldRender(true);
+
+		AttachCopy(newLight, lightLight);
+	}
+
 	ImGui::Text("Tone Mapping");
 	
 	float exposure = illBuffer->GetExposure();

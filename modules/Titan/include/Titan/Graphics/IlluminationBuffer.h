@@ -9,7 +9,9 @@
 #include "Titan/Graphics/UniformBuffer.h"
 #include "Titan/Graphics/GBuffer.h"
 #include "Titan/Graphics/Light.h"
-#include "Titan/Graphics/VertexArrayObject.h"
+#include "Titan/Graphics/Mesh.h"
+#include "Titan/Utilities/Transform.h"
+#include "Titan/Graphics/ObjLoader.h"
 
 namespace Titan {
 	enum TTN_Lights
@@ -85,6 +87,11 @@ namespace Titan {
 		//hdr tone mapping
 		void SetExposure(float exposure) { m_exposure = exposure; }
 		float GetExposure() { return m_exposure; }
+
+		//point light stuff
+		void SetVPMatrix(glm::mat4 vp) { m_vp = vp; }
+		void SetPointLightVector(std::vector<TTN_Light> lights) { m_lights = lights; }
+		void RenderPointLightVolumes();
 		
 	private:
 		glm::mat4 m_viewMat;
@@ -115,8 +122,12 @@ namespace Titan {
 		bool m_useDiffuseRamp;
 		bool m_useSpecularRamp;
 
-		static TTN_VertexArrayObject::svaptr s_SphereVAO;
-		static TTN_Shader::sshptr s_pointLightShader;
-		static TTN_Shader::sshptr s_lightVolumeShader;
+		inline static TTN_Mesh::smptr s_sphereMesh = nullptr;
+		inline static TTN_Shader::sshptr s_pointLightShader = nullptr;
+		inline static TTN_Shader::sshptr s_lightVolumeShader = nullptr;
+		inline static TTN_Transform s_volumeTrans = TTN_Transform(glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(1.0f));
+		glm::mat4 m_vp = glm::mat4(1.0f);
+
+		std::vector<TTN_Light> m_lights = std::vector<TTN_Light>();
 	};
 }
