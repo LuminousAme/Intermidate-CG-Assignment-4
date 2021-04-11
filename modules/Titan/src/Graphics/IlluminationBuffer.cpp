@@ -88,6 +88,16 @@ namespace Titan {
 
 	void TTN_IlluminationBuffer::ApplyEffect(TTN_GBuffer::sgbufptr gBuffer)
 	{
+		//blit the gbuffer's depth over
+		glm::ivec2 windowSize = TTN_Backend::GetWindowSize();
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer->GetHandle());
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_buffers[1]->GetHandle());
+		glBlitFramebuffer(0, 0, windowSize.x, windowSize.y, 0, 0, windowSize.x, windowSize.y, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, GL_NONE);
+
+		//don't write to the light's depth buffer
+		glDepthMask(GL_FALSE);
+
 		//send direcitonal light data
 		m_sunBuffer.SendData(reinterpret_cast<void*>(&m_sun), sizeof(TTN_DirectionalLight));
 
@@ -144,12 +154,10 @@ namespace Titan {
 	
 		//point lights 
 		for (int i = 0; i < m_lights.size(); i++) {
-			glCullFace(GL_FRONT);
-			glDisable(GL_DEPTH_TEST);
+			//glCullFace(GL_FRONT);
 
 			s_pointLightShader->Bind();
 			s_pointLightShader->SetUniform("u_CamPos", m_camPos);
-			glm::ivec2 windowSize = TTN_Backend::GetWindowSize();
 			s_pointLightShader->SetUniform("u_windowWidth", float(windowSize.x));
 			s_pointLightShader->SetUniform("u_windowHeight", float(windowSize.y));
 			m_diffuseRamp->Bind(9);
@@ -185,8 +193,8 @@ namespace Titan {
 			m_buffers[2]->UnbindTexture(0);
 			s_pointLightShader->UnBind();
 			gBuffer->UnbindLighting();
-			glEnable(GL_DEPTH_TEST);
-			glCullFace(GL_BACK);
+			//glEnable(GL_CULL_FACE);
+			//glCullFace(GL_BACK);
 
 			//copy to spare buffer
 			m_shaders[m_shaders.size() - 1]->Bind();
@@ -198,6 +206,9 @@ namespace Titan {
 			m_shaders[m_shaders.size() - 1]->UnBind();
 		}
 
+
+		//write to the depth buffer again
+		glDepthMask(GL_TRUE);
 
 		//ambient lighting and adding it to the existing images
 
