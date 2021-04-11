@@ -302,6 +302,28 @@ void Game::KeyDownChecks()
 	if (TTN_Application::TTN_Input::GetKey(TTN_KeyCode::C) && TTN_Application::TTN_Input::GetKeyDown(TTN_KeyCode::G)) {
 		showCGControls = !showCGControls;
 	}
+
+	if (TTN_Application::TTN_Input::GetKeyDown(TTN_KeyCode::KeyPadPlus)) {
+		if (m_Lights.size() <= 25) {
+			entt::entity newLight = CreateEntity();
+			m_Lights.push_back(newLight);
+
+			TTN_Light lightLight = TTN_Light(glm::vec3(1.0f), 0.5f, 0.5f, 0.0f, 2.0f, 8.0f);
+			int end = 0;
+			if (m_Lights.size() > 1) {
+				for (int i = 0; i < m_Lights.size(); i++) {
+					end = i;
+				}
+				lightLight.SetPosition(glm::vec3(Get<TTN_Light>(m_Lights[end - 1]).GetPosition().x + 0.4f, 1.0f, 5.0f));
+			}
+			else
+				lightLight.SetPosition(glm::vec3(-4.0f, 1.0f, 5.0f));
+
+			lightLight.SetVolumeShouldRender(true);
+
+			AttachCopy(newLight, lightLight);
+		}
+	}
 }
 
 //function to cehck for when a key is being pressed
@@ -385,7 +407,7 @@ void Game::SetUpAssets()
 	m_DialougeKilling5Birds = TTN_AudioEventHolder::Create("Dialouge Killing 5 birds", "{cf5fc3c7-5391-42e9-b862-0795f4e29590}", 1);
 	m_DialougeKilling10Birds = TTN_AudioEventHolder::Create("Dialogue Killing 10 Birds", "{4bfaf6a0-cfca-466b-af2c-eb8b3137171f}", 1);
 	m_DialougeKilling25Birds = TTN_AudioEventHolder::Create("Dialouge Killing 25 BIrds", "{86fedd33-1384-4242-8df4-66e193126f38}", 1);
-	
+
 	m_DialougeKillingJerry = TTN_AudioEventHolder::Create("Killing Jerry", "{8ed61f3c-f5a5-4f4b-b616-736672a84e34}", 1);
 	m_DialougeKillingJuilian = TTN_AudioEventHolder::Create("Killing Julian", "{3602d91a-014c-4346-808b-5feaffa769eb}", 1);
 	m_DialougeKillingJulianWhileJerryIsAlive = TTN_AudioEventHolder::Create("Killing Julian While Jerry Is Alive", "{7a299c08-45d4-44d6-a512-71cc6b8f0699}", 1);
@@ -1800,7 +1822,6 @@ void Game::Collisions() {
 			//if they do, then check they both have tags
 			if (TTN_Scene::Has<TTN_Tag>(entity1Ptr) && TTN_Scene::Has<TTN_Tag>(entity2Ptr)) {
 				//if they do, then do tag comparisons
-	
 
 				//if one is a boat and the other is a cannonball
 				if (cont && ((Get<TTN_Tag>(entity1Ptr).getLabel() == "Boat" && Get<TTN_Tag>(entity2Ptr).getLabel() == "Ball") ||
@@ -1881,10 +1902,9 @@ void Game::Collisions() {
 				}
 
 				//if one is a bird  and they are not jerry or julian  and the other is a boat
-				else if (cont && ((Get<TTN_Tag>(entity1Ptr).getLabel() == "Boat" && (Get<TTN_Tag>(entity2Ptr).getLabel() == "Bird" )) ||
+				else if (cont && ((Get<TTN_Tag>(entity1Ptr).getLabel() == "Boat" && (Get<TTN_Tag>(entity2Ptr).getLabel() == "Bird")) ||
 					((Get<TTN_Tag>(entity1Ptr).getLabel() == "Bird") && Get<TTN_Tag>(entity2Ptr).getLabel() == "Boat"))) {
 					//iterate through all of the boats through all of them until you find matching entity numbers
-					
 
 					std::vector<entt::entity>::iterator itt = boats.begin();
 					while (itt != boats.end()) {
@@ -1992,9 +2012,8 @@ void Game::Collisions() {
 					}
 
 					cont = false;
-
 				}
-				
+
 				//if one is jerry and other is a ball
 				else if (cont && (((Get<TTN_Tag>(entity1Ptr).getLabel() == "Bird" && Get<BirdComponent>(entity1Ptr).GetIsJerry()) && Get<TTN_Tag>(entity2Ptr).getLabel() == "Ball")) ||
 					(Get<TTN_Tag>(entity1Ptr).getLabel() == "Ball" && (Get<TTN_Tag>(entity2Ptr).getLabel() == "Bird" && Get<BirdComponent>(entity2Ptr).GetIsJerry()))) {
@@ -2047,7 +2066,7 @@ void Game::Collisions() {
 					(Get<TTN_Tag>(entity1Ptr).getLabel() == "Ball" && (Get<TTN_Tag>(entity2Ptr).getLabel() == "Bird" && Get<BirdComponent>(entity2Ptr).GetIsJulian() && jerryAlive))) {
 					m_DialougeKillingJulianWhileJerryIsAlive->SetNextPostion(glm::vec3(0.0f));
 					m_DialougeKillingJulianWhileJerryIsAlive->PlayFromQueue();
-					
+
 					//then iterate through the list of cannonballs until you find the one that's collided
 					std::vector<std::pair<entt::entity, bool>>::iterator it = cannonBalls.begin();
 					while (it != cannonBalls.end()) {
@@ -2094,7 +2113,7 @@ void Game::Collisions() {
 					(Get<TTN_Tag>(entity1Ptr).getLabel() == "Ball" && (Get<TTN_Tag>(entity2Ptr).getLabel() == "Bird" && Get<BirdComponent>(entity2Ptr).GetIsJulian() && !jerryAlive))) {
 					m_DialougeKillingJuilian->SetNextPostion(glm::vec3(0.0f));
 					m_DialougeKillingJuilian->PlayFromQueue();
-					
+
 					//then iterate through the list of cannonballs until you find the one that's collided
 					std::vector<std::pair<entt::entity, bool>>::iterator it = cannonBalls.begin();
 					while (it != cannonBalls.end()) {
@@ -2495,8 +2514,8 @@ void Game::BirdBomb()
 		}
 
 		//loop through and set the target for all of the birds
-			for (auto bird : birds)
-				Get<BirdComponent>(bird).SetTarget(currentTarget);
+		for (auto bird : birds)
+			Get<BirdComponent>(bird).SetTarget(currentTarget);
 	}
 }
 
@@ -2722,7 +2741,7 @@ void Game::ImGui()
 	}
 
 	ImGui::Begin("CG Assingment 4 Controls");
-	
+
 	ImGui::Text("Point Lights");
 
 	std::vector<glm::vec3> lightPositions = std::vector<glm::vec3>(m_Lights.size());
@@ -2796,19 +2815,29 @@ void Game::ImGui()
 		}
 	}
 
-	if (ImGui::Button("Make new point light")) {
-		entt::entity newLight = CreateEntity();
-		m_Lights.push_back(newLight);
+	if (m_Lights.size() <= 25) {
+		if (ImGui::Button("Make new point light")) {
+			entt::entity newLight = CreateEntity();
+			m_Lights.push_back(newLight);
 
-		TTN_Light lightLight = TTN_Light(glm::vec3(1.0f), 0.5f, 0.5f, 0.0f, 2.0f, 8.0f);
-		lightLight.SetPosition(glm::vec3(0.0f, 1.0f, 5.0f));
-		lightLight.SetVolumeShouldRender(true);
+			TTN_Light lightLight = TTN_Light(glm::vec3(1.0f), 0.5f, 0.5f, 0.0f, 2.0f, 8.0f);
+			int end = 0;
+			if (m_Lights.size() > 1) {
+				for (int i = 0; i < m_Lights.size(); i++) {
+					end = i;
+				}
+				lightLight.SetPosition(glm::vec3(Get<TTN_Light>(m_Lights[end - 1]).GetPosition().x + 0.4f, 1.0f, 5.0f));
+			}
+			else
+				lightLight.SetPosition(glm::vec3(-4.0f, 1.0f, 5.0f));
+			lightLight.SetVolumeShouldRender(true);
 
-		AttachCopy(newLight, lightLight);
+			AttachCopy(newLight, lightLight);
+		}
 	}
 
 	ImGui::Text("Tone Mapping");
-	
+
 	float exposure = illBuffer->GetExposure();
 	if (ImGui::SliderFloat("Exposure", &exposure, 0.01f, 20.0f)) {
 		illBuffer->SetExposure(exposure);

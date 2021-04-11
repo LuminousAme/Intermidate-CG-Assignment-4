@@ -345,7 +345,7 @@ namespace Titan {
 			tempShader->SetUniformMatrix("u_SkyboxMatrix", Get<TTN_Camera>(m_Cam).GetProj() * glm::mat4(glm::mat3(viewMat)));
 
 			//render the mesh
-			Get<TTN_Renderer>(m_Skybox).Render(Get<TTN_Transform>(m_Skybox).GetGlobal(), vp, &glm::mat4(1.0f), 
+			Get<TTN_Renderer>(m_Skybox).Render(Get<TTN_Transform>(m_Skybox).GetGlobal(), vp, &glm::mat4(1.0f),
 				viewMat);
 
 			tempShader->UnBind();
@@ -504,7 +504,6 @@ namespace Titan {
 
 		ReconstructScenegraph();
 
-		
 		//check to make sure there is acutally any 3D geometry to render
 		auto render3DView = m_Registry->view<TTN_Transform, TTN_Renderer>();
 		bool is3DGeo = false;
@@ -524,7 +523,7 @@ namespace Titan {
 
 			//make an array of matrices with which to make the projection matrices in
 			glm::mat4 lightSpaceMatrices[4];
-			
+
 			//loop through creating each matrix
 			for (int i = 0; i < 4; i++) {
 				//get the interpolation parameters for the near and far values
@@ -549,7 +548,7 @@ namespace Titan {
 					n = 0.5f;
 					f = 1.0f;
 					break;
-				}		
+				}
 
 				//now get all of the corners in world space
 				std::vector<glm::vec3> corners;
@@ -580,15 +579,13 @@ namespace Titan {
 				glm::vec3 maxOrtho = lightSpaceFrustaCenter - glm::vec3(frustaRadius);
 				glm::vec3 minOrtho = lightSpaceFrustaCenter + glm::vec3(frustaRadius);
 
-
 				//store the near and fars
 				float farLightSpace = maxOrtho.z;
 				float nearLightSpace = minOrtho.z;
 
 				//use those mins and maxes to construct the orthographic projection matrix
-				lightSpaceMatrices[i]  = glm::ortho(minOrtho.x, maxOrtho.x, minOrtho.y, maxOrtho.y, nearLightSpace, farLightSpace);
+				lightSpaceMatrices[i] = glm::ortho(minOrtho.x, maxOrtho.x, minOrtho.y, maxOrtho.y, nearLightSpace, farLightSpace);
 
-				
 				//make the rounding matrix
 				glm::vec4 shadowOrigin = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 				shadowOrigin = lightSpaceMatrices[i] * lightViewMatrix * shadowOrigin;
@@ -635,7 +632,7 @@ namespace Titan {
 			//loop through all of the meshes
 			m_RenderGroup->each([&](entt::entity entity, TTN_Transform& transform, TTN_Renderer& renderer) {
 				// Render the mesh if it should be casting shadows
-				if (renderer.GetCastShadows() && entity	!= m_Skybox) {
+				if (renderer.GetCastShadows() && entity != m_Skybox) {
 					simpleShadowShader->SetUniformMatrix("u_Model", transform.GetGlobal());
 					simpleShadowShader->SetUniformMatrix("u_LightSpaceMatrix", lightSpaceMatrices[0], 4);
 					if (Has<TTN_MorphAnimator>(entity))
@@ -644,7 +641,6 @@ namespace Titan {
 						simpleShadowShader->SetUniform("t", 0.0f);
 					renderer.Render(transform.GetGlobal(), vp, lightSpaceMatrices, viewMat);
 				}
-
 			});
 
 			glCullFace(GL_BACK);
