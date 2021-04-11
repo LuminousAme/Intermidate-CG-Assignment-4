@@ -2720,4 +2720,18 @@ void Game::ImGui()
 
 		ImGui::End();
 	}
+
+	ImGui::Begin("CG Assingment 4 Controls");
+	
+	ImGui::Text("Point Lights");
+
+	ImGui::Text("Tone Mapping");
+	
+	float exposure = illBuffer->GetExposure();
+	if (ImGui::SliderFloat("Exposure", &exposure, 0.01f, 20.0f)) {
+		illBuffer->SetExposure(exposure);
+	}
+
+
+	ImGui::End();
 }
