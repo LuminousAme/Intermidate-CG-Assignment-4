@@ -304,23 +304,25 @@ void Game::KeyDownChecks()
 	}
 
 	if (TTN_Application::TTN_Input::GetKeyDown(TTN_KeyCode::KeyPadPlus)) {
-		entt::entity newLight = CreateEntity();
-		m_Lights.push_back(newLight);
+		if (m_Lights.size() <= 25) {
+			entt::entity newLight = CreateEntity();
+			m_Lights.push_back(newLight);
 
-		TTN_Light lightLight = TTN_Light(glm::vec3(1.0f), 0.5f, 0.5f, 0.0f, 2.0f, 8.0f);
-		int end = 0;
-		if (m_Lights.size() > 1) {
-			for (int i = 0; i < m_Lights.size(); i++) {
-				end = i;
+			TTN_Light lightLight = TTN_Light(glm::vec3(1.0f), 0.5f, 0.5f, 0.0f, 2.0f, 8.0f);
+			int end = 0;
+			if (m_Lights.size() > 1) {
+				for (int i = 0; i < m_Lights.size(); i++) {
+					end = i;
+				}
+				lightLight.SetPosition(glm::vec3(Get<TTN_Light>(m_Lights[end - 1]).GetPosition().x + 0.4f, 1.0f, 5.0f));
 			}
-			lightLight.SetPosition(glm::vec3(Get<TTN_Light>(m_Lights[end-1]).GetPosition().x + 1.f, 1.0f, 5.0f));
+			else
+				lightLight.SetPosition(glm::vec3(-4.0f, 1.0f, 5.0f));
+
+			lightLight.SetVolumeShouldRender(true);
+
+			AttachCopy(newLight, lightLight);
 		}
-		else
-			lightLight.SetPosition(glm::vec3(0.0f, 1.0f, 5.0f));
-
-		lightLight.SetVolumeShouldRender(true);
-
-		AttachCopy(newLight, lightLight);
 	}
 }
 
@@ -2813,23 +2815,25 @@ void Game::ImGui()
 		}
 	}
 
-	if (ImGui::Button("Make new point light")) {
-		entt::entity newLight = CreateEntity();
-		m_Lights.push_back(newLight);
+	if (m_Lights.size() <= 25) {
+		if (ImGui::Button("Make new point light")) {
+			entt::entity newLight = CreateEntity();
+			m_Lights.push_back(newLight);
 
-		TTN_Light lightLight = TTN_Light(glm::vec3(1.0f), 0.5f, 0.5f, 0.0f, 2.0f, 8.0f);
-		int end = 0;
-		if (m_Lights.size() > 1) {
-			for (int i = 0; i < m_Lights.size(); i++) {
-				end = i;
+			TTN_Light lightLight = TTN_Light(glm::vec3(1.0f), 0.5f, 0.5f, 0.0f, 2.0f, 8.0f);
+			int end = 0;
+			if (m_Lights.size() > 1) {
+				for (int i = 0; i < m_Lights.size(); i++) {
+					end = i;
+				}
+				lightLight.SetPosition(glm::vec3(Get<TTN_Light>(m_Lights[end - 1]).GetPosition().x + 0.4f, 1.0f, 5.0f));
 			}
-			lightLight.SetPosition(glm::vec3(Get<TTN_Light>(m_Lights[end - 1]).GetPosition().x + 1.f, 1.0f, 5.0f));
-		}
-		else
-			lightLight.SetPosition(glm::vec3(0.0f, 1.0f, 5.0f));
-		lightLight.SetVolumeShouldRender(true);
+			else
+				lightLight.SetPosition(glm::vec3(-4.0f, 1.0f, 5.0f));
+			lightLight.SetVolumeShouldRender(true);
 
-		AttachCopy(newLight, lightLight);
+			AttachCopy(newLight, lightLight);
+		}
 	}
 
 	ImGui::Text("Tone Mapping");
