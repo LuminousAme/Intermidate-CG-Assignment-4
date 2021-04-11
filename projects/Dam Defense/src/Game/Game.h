@@ -475,6 +475,16 @@ protected:
 	bool m_useTextures = true;
 
 	bool showCGControls = false;
+
+	//variables for what deffered piece it is rendering
+	bool m_renderAll = true;
+	bool m_renderPositionsOnly = false;
+	bool m_renderNormalsOnly = false;
+	bool m_renderAlbedoOnly = false;
+	bool m_renderLightAccumulationBufferOnly = false;
+
+	//variable for if the light volumes are rendering
+	bool m_renderLightVolumes = true;
 };
 
 inline float SmoothStep(float t) {

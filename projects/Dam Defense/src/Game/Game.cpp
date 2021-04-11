@@ -2817,9 +2817,7 @@ void Game::ImGui()
 		ImGui::End();
 	}
 
-	ImGui::Begin("CG Assingment 4 Controls");
-
-	ImGui::Text("Point Lights");
+	ImGui::Begin("Point Light Controls");
 
 	std::vector<glm::vec3> lightPositions = std::vector<glm::vec3>(m_Lights.size());
 	std::vector<glm::vec3> lightColors = std::vector<glm::vec3>(m_Lights.size());
@@ -2910,79 +2908,79 @@ void Game::ImGui()
 					lightLight.SetPosition(glm::vec3(-4.0f, 1.0f, 5.0f));*/
 			for (int i = 0; i < m_Lights.size(); i++) {
 				if (i == 0)
-					lightLight.SetPosition(glm::vec3(0.0f, 1.0f, 10.0f));
+					lightLight.SetPosition(glm::vec3(0.0f, -0.8f, 10.0f));
 
 				else if (i == 1)
-					lightLight.SetPosition(glm::vec3(0.0f, 1.0f, 8.0f));
+					lightLight.SetPosition(glm::vec3(0.0f, -0.8f, 8.0f));
 
 				else if (i == 2)
-					lightLight.SetPosition(glm::vec3(0.0f, 1.0f, 6.0f));
+					lightLight.SetPosition(glm::vec3(0.0f, -0.8f, 6.0f));
 
 				else if (i == 3)
-					lightLight.SetPosition(glm::vec3(0.0f, 1.0f, 12.0f));
+					lightLight.SetPosition(glm::vec3(0.0f, -0.8f, 12.0f));
 
 				else if (i == 4)
-					lightLight.SetPosition(glm::vec3(0.0f, 1.0f, 14.0f));
+					lightLight.SetPosition(glm::vec3(0.0f, -0.8f, 14.0f));
 
 				//10.f
 				else if (i == 5)
-					lightLight.SetPosition(glm::vec3(2.0f, 1.0f, 10.0f));
+					lightLight.SetPosition(glm::vec3(2.0f, -0.8f, 10.0f));
 				else if (i == 6)
-					lightLight.SetPosition(glm::vec3(4.0f, 1.0f, 10.0f));
+					lightLight.SetPosition(glm::vec3(4.0f, -0.8f, 10.0f));
 				else if (i == 7)
-					lightLight.SetPosition(glm::vec3(-2.0f, 1.0f, 10.0f));
+					lightLight.SetPosition(glm::vec3(-2.0f, -0.8f, 10.0f));
 				else if (i == 8)
-					lightLight.SetPosition(glm::vec3(-4.0f, 1.0f, 10.0f));
+					lightLight.SetPosition(glm::vec3(-4.0f, -0.8f, 10.0f));
 
 				//8.f
 				else if (i == 9)
-					lightLight.SetPosition(glm::vec3(2.0f, 1.0f, 8.0f));
+					lightLight.SetPosition(glm::vec3(2.0f, -0.8f, 8.0f));
 
 				else if (i == 10)
-					lightLight.SetPosition(glm::vec3(4.0f, 1.0f, 8.0f));
+					lightLight.SetPosition(glm::vec3(4.0f, -0.8f, 8.0f));
 
 				else if (i == 11)
-					lightLight.SetPosition(glm::vec3(-2.0f, 1.0f, 8.0f));
+					lightLight.SetPosition(glm::vec3(-2.0f, -0.8f, 8.0f));
 
 				else if (i == 12)
-					lightLight.SetPosition(glm::vec3(-4.0f, 1.0f, 8.0f));
+					lightLight.SetPosition(glm::vec3(-4.0f, -0.8f, 8.0f));
 
 				//6.f
 				else if (i == 13)
-					lightLight.SetPosition(glm::vec3(2.0f, 1.0f, 6.0f));
+					lightLight.SetPosition(glm::vec3(2.0f, -0.8f, 6.0f));
 
 				else if (i == 14)
-					lightLight.SetPosition(glm::vec3(4.0f, 1.0f, 6.0f));
+					lightLight.SetPosition(glm::vec3(4.0f, -0.8f, 6.0f));
 
 				else if (i == 15)
-					lightLight.SetPosition(glm::vec3(-2.0f, 1.0f, 6.0f));
+					lightLight.SetPosition(glm::vec3(-2.0f, -0.8f, 6.0f));
 
 				else if (i == 16)
-					lightLight.SetPosition(glm::vec3(-4.0f, 1.0f, 6.0f));
+					lightLight.SetPosition(glm::vec3(-4.0f, -0.8f, 6.0f));
 
 				//12.f
 				else if (i == 17)
-					lightLight.SetPosition(glm::vec3(2.0f, 1.0f, 12.0f));
+					lightLight.SetPosition(glm::vec3(2.0f, -0.8f, 12.0f));
 
 				else if (i == 18)
-					lightLight.SetPosition(glm::vec3(-2.0f, 1.0f, 12.0f));
+					lightLight.SetPosition(glm::vec3(-2.0f, -0.8f, 12.0f));
 
 				else if (i == 19)
-					lightLight.SetPosition(glm::vec3(4.0f, 1.0f, 12.0f));
+					lightLight.SetPosition(glm::vec3(4.0f, -0.8f, 12.0f));
 
 				else if (i == 20)
-					lightLight.SetPosition(glm::vec3(-4.0f, 1.0f, 12.0f));
+					lightLight.SetPosition(glm::vec3(-4.0f, -0.8f, 12.0f));
 
 				//14.f
 				else if (i == 21)
-					lightLight.SetPosition(glm::vec3(2.0f, 1.0f, 14.0f));
+					lightLight.SetPosition(glm::vec3(2.0f, -0.8f, 14.0f));
 
 				else if (i == 22)
-					lightLight.SetPosition(glm::vec3(-2.0f, 1.0f, 14.0f));
+					lightLight.SetPosition(glm::vec3(-2.0f, -0.8f, 14.0f));
 				else if (i == 23)
-					lightLight.SetPosition(glm::vec3(4.0f, 1.0f, 14.0f));
+					lightLight.SetPosition(glm::vec3(4.0f, -0.8f, 14.0f));
 				else if (i == 24)
-					lightLight.SetPosition(glm::vec3(-4.0f, 1.0f, 14.0f));
+					lightLight.SetPosition(glm::vec3(-4.0f, -0.8f, 14.0f));
 			}
 
 			lightLight.SetVolumeShouldRender(true);
@@ -2991,11 +2989,52 @@ void Game::ImGui()
 		}
 	}
 
+
+
 	ImGui::Text("Tone Mapping");
 
 	float exposure = illBuffer->GetExposure();
 	if (ImGui::SliderFloat("Exposure", &exposure, 0.01f, 20.0f)) {
 		illBuffer->SetExposure(exposure);
+	}
+
+	ImGui::End();
+
+	ImGui::Begin("CG Assingment 4 Debug keys");
+
+	if (ImGui::Button("Render Composed Scene")) {
+		RenderCompositedScene();
+	}
+
+	if (ImGui::Button("Render Light Volumes")) {
+		m_renderLightVolumes = !m_renderLightVolumes;
+
+		for (int i = 0; i < m_Lights.size(); i++) {
+			Get<TTN_Light>(m_Lights[i]).SetVolumeShouldRender(m_renderLightVolumes);
+		}
+	}
+
+	if (ImGui::Button("Render Only Position")) {
+		RenderOnlyPositions();
+	}
+
+	if (ImGui::Button("Render Only Normals")) {
+		RenderOnlyNormals();
+	}
+
+	if (ImGui::Button("Render Only Normals")) {
+		RenderOnlyAlbedo();
+	}
+
+	if (ImGui::Button("Render Light Acculumation Buffer")) {
+		RenderOnlyLightAccululation();
+	}
+
+	if (ImGui::Button("Toogle Volume Shape")) {
+		int shape = illBuffer->GetVolumeShape();
+		if (shape == 2) shape = 0;
+		else shape++;
+		illBuffer->SetVolumeShape(shape);
 	}
 
 	ImGui::End();
