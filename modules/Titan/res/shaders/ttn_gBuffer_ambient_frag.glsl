@@ -29,6 +29,7 @@ layout (std140, binding = 0) uniform u_Lights
 };
 
 uniform int u_useAmbientLight;
+uniform float u_exposure;
 
 layout (binding = 0) uniform sampler2D s_albedoTex;
 layout (binding = 4) uniform sampler2D s_lightAccumTex;
@@ -46,9 +47,16 @@ void main() {
     vec3 ambient = ambience.m_lightAmbientPower * ambience.m_ambientColor.rgb;
 	ambient = mix(vec3(0.0), ambient, u_useAmbientLight);
 
-    //the result of all lighting
-    vec3 result = (ambient + lightAccum.rgb) * textureColor.rgb;
+    //add the ambient to the light accumulation 
+    vec3 result = (ambient + lightAccum.rbg);
+	//do tone mapping on it 
+	result = vec3(1.0) - exp(-result * u_exposure);
+	//gamma correction
+	result = pow(result, vec3(1.0 / 2.2));
 
-    //the light accumulation
+	//finally apply it to the texture
+	result = result * textureColor.rgb;
+
+    //and output the result
     frag_color = vec4(result, 1.0);
 }

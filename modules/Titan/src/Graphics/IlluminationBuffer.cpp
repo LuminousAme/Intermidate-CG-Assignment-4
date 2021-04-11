@@ -9,7 +9,7 @@ namespace Titan {
 		//composite buffer
 		int index = int(m_buffers.size());
 		m_buffers.push_back(TTN_Framebuffer::Create());
-		m_buffers[index]->AddColorTarget(GL_RGBA8);
+		m_buffers[index]->AddColorTarget(GL_RGB16F);
 		m_buffers[index]->AddDepthTarget();
 		m_buffers[index]->Init(width, height);
 
@@ -111,6 +111,7 @@ namespace Titan {
 		m_buffers[0]->BindColorAsTexture(0, 5);
 
 		m_shaders[TTN_Lights::AMBIENT]->SetUniform("u_useAmbientLight", (int)m_useAmbient);
+		m_shaders[TTN_Lights::AMBIENT]->SetUniform("u_exposure", m_exposure);
 
 		m_buffers[0]->RenderToFSQ();
 

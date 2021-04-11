@@ -9,6 +9,7 @@
 #include "Titan/Graphics/UniformBuffer.h"
 #include "Titan/Graphics/GBuffer.h"
 #include "Titan/Graphics/Light.h"
+#include "Titan/Graphics/VertexArrayObject.h"
 
 namespace Titan {
 	enum TTN_Lights
@@ -33,6 +34,8 @@ namespace Titan {
 		//Initializes framebuffer
 		//Overrides post effect Init
 		void Init(unsigned width, unsigned height) override;
+
+		static void Setup();
 
 		//Makes it so apply effect with a PostEffect does nothing for this object
 		void ApplyEffect(TTN_PostEffect::spostptr buffer) override { };
@@ -78,6 +81,10 @@ namespace Titan {
 		glm::vec3 GetRimColor() { return m_rimColor; }
 		float GetRimSize() { return m_rimSize; }
 		float GetEmissiveStrenght() { return m_emissiveStrenght; }
+
+		//hdr tone mapping
+		void SetExposure(float exposure) { m_exposure = exposure; }
+		float GetExposure() { return m_exposure; }
 		
 	private:
 		glm::mat4 m_viewMat;
@@ -88,6 +95,8 @@ namespace Titan {
 		glm::vec3 m_rimColor = glm::vec3(1.0f, 1.0f, 1.0f);
 		float m_rimSize = 0.4f;
 		float m_emissiveStrenght = 1.0f;
+
+		float m_exposure = 1.0f;
 
 		TTN_Framebuffer::sfboptr m_shadowBuffer;
 
@@ -105,5 +114,9 @@ namespace Titan {
 		TTN_Texture2D::st2dptr m_specularRamp;
 		bool m_useDiffuseRamp;
 		bool m_useSpecularRamp;
+
+		static TTN_VertexArrayObject::svaptr s_SphereVAO;
+		static TTN_Shader::sshptr s_pointLightShader;
+		static TTN_Shader::sshptr s_lightVolumeShader;
 	};
 }
