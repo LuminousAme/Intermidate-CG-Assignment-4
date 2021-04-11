@@ -94,7 +94,7 @@ void OptionsMenu::InitScene()
 
 		//create a transform for the button
 		TTN_Transform buttonTrans;
-		buttonTrans = TTN_Transform(glm::vec3(-850.0f, -450.0f,  0.8f), glm::vec3(0.0f), glm::vec3(200.0f, 100.0, 1.0f));
+		buttonTrans = TTN_Transform(glm::vec3(-850.0f, -450.0f, 0.8f), glm::vec3(0.0f), glm::vec3(200.0f, 100.0, 1.0f));
 
 		AttachCopy(textureApply, buttonTrans);
 
@@ -192,7 +192,6 @@ void OptionsMenu::InitScene()
 		TTN_Renderer2D buttonRenderer = TTN_Renderer2D(TTN_AssetSystem::GetTexture2D("Normal"));
 		AttachCopy(textureNormal, buttonRenderer);
 	}
-
 
 	//hard difficulty
 	{
@@ -297,7 +296,6 @@ void OptionsMenu::InitScene()
 		//create a 2D renderer for the button
 		TTN_Renderer2D buttonRenderer = TTN_Renderer2D(TTN_AssetSystem::GetTexture2D("SFX Volume"));
 		AttachCopy(textureSFXVolume, buttonRenderer);
-
 	}
 
 	//undo texture
@@ -1367,7 +1365,6 @@ void OptionsMenu::MouseButtonDownChecks()
 				//if it's to the left then figure out what percentage it is
 				else if (mousePosWorldSpace.x > 0.0f) {
 					normalizedDiff = abs(TTN_Interpolation::ReMap(0.0f, 200.0f, 0.0f, 1.0f, (abs((mousePosWorldSpace.x - 10.f) / diffBarTrans.GetScale().x) * 200.f)) - 0.5f);
-
 				}
 
 				//if it's to the right then figure out what percentage it is

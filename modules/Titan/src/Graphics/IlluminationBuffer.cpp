@@ -71,10 +71,14 @@ namespace Titan {
 	void TTN_IlluminationBuffer::Setup()
 	{
 		//load the mesh
-		s_sphereMesh = TTN_ObjLoader::LoadFromFile("lightVolumeSphere.obj");
-		s_sphereMesh->SetUpVao();
+		/*s_sphereMesh = TTN_ObjLoader::LoadFromFile("lightVolumeSphere.obj");
+		s_sphereMesh->SetUpVao();*/
+		s_coneMesh = TTN_ObjLoader::LoadFromFile("cone.obj");
+		s_coneMesh->SetUpVao();
+		/*	s_cubeMesh = TTN_ObjLoader::LoadFromFile("cube.obj");
+			s_cubeMesh->SetUpVao();*/
 
-		//load the shaders
+			//load the shaders
 		s_pointLightShader = TTN_Shader::Create();
 		s_pointLightShader->LoadShaderStageFromFile("shaders/ttn_gBuffer_point_vert.glsl", GL_VERTEX_SHADER);
 		s_pointLightShader->LoadShaderStageFromFile("shaders/ttn_gBuffer_point_frag.glsl", GL_FRAGMENT_SHADER);
@@ -332,7 +336,9 @@ namespace Titan {
 				s_lightVolumeShader->SetUniform("u_alpha", m_lights[i].GetVolumeTransparency());
 
 				//render
-				s_sphereMesh->GetVAOPointer()->Render();
+				//s_sphereMesh->GetVAOPointer()->Render();
+				s_coneMesh->GetVAOPointer()->Render();
+				//s_cubeMesh->GetVAOPointer()->Render();
 			}
 		}
 

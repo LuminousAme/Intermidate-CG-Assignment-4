@@ -124,6 +124,8 @@ namespace Titan {
 		bool m_useSpecularRamp;
 
 		inline static TTN_Mesh::smptr s_sphereMesh = nullptr;
+		inline static TTN_Mesh::smptr s_cubeMesh = nullptr;
+		inline static TTN_Mesh::smptr s_coneMesh = nullptr;
 		inline static TTN_Shader::sshptr s_pointLightShader = nullptr;
 		inline static TTN_Shader::sshptr s_lightVolumeShader = nullptr;
 		inline static TTN_Transform s_volumeTrans = TTN_Transform(glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(1.0f));
