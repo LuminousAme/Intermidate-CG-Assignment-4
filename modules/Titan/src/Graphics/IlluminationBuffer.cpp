@@ -54,11 +54,30 @@ namespace Titan {
 		TTN_PostEffect::Init(width, height);
 	}
 
+	void TTN_IlluminationBuffer::Setup()
+	{
+		//load the mesh
+		s_sphereMesh = TTN_ObjLoader::LoadFromFile("lightVolumeSphere.obj");
+		s_sphereMesh->SetUpVao();
+
+		//load the shaders
+		s_pointLightShader = TTN_Shader::Create();
+		s_pointLightShader->LoadShaderStageFromFile("shaders/ttn_gBuffer_point_vert.glsl", GL_VERTEX_SHADER);
+		s_pointLightShader->LoadShaderStageFromFile("shaders/ttn_gBuffer_point_frag.glsl", GL_FRAGMENT_SHADER);
+		s_pointLightShader->Link();
+
+		s_lightVolumeShader = TTN_Shader::Create();
+		s_lightVolumeShader->LoadShaderStageFromFile("shaders/ttn_gBuffer_point_vert.glsl", GL_VERTEX_SHADER);
+		s_lightVolumeShader->LoadShaderStageFromFile("shaders/ttn_point_light_volume_frag.glsl", GL_FRAGMENT_SHADER);
+		s_lightVolumeShader->Link();
+	}
+
 	void TTN_IlluminationBuffer::ApplyEffect(TTN_GBuffer::sgbufptr gBuffer)
 	{
 		//send direcitonal light data
 		m_sunBuffer.SendData(reinterpret_cast<void*>(&m_sun), sizeof(TTN_DirectionalLight));
 
+		//directional light
 		if (m_sunEnabled) {
 			//binds directional light shader
 			m_shaders[TTN_Lights::DIRECTIONAL]->Bind();
@@ -98,6 +117,8 @@ namespace Titan {
 			//unbind shader
 			m_shaders[TTN_Lights::DIRECTIONAL]->UnBind();
 		}
+
+		//ambient lighting and adding it to the existing images
 
 		//bind ambient shader
 		m_shaders[TTN_Lights::AMBIENT]->Bind();
@@ -192,5 +213,41 @@ namespace Titan {
 	void TTN_IlluminationBuffer::EnableSun(bool enabled)
 	{
 		m_sunEnabled = enabled;
+	}
+
+	//renders any point lights to the currently bound framebuffer
+	void TTN_IlluminationBuffer::RenderPointLightVolumes()
+	{
+		//bind the shader
+		s_lightVolumeShader->Bind();
+
+		//set the polygon mode
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+		//render all of the spheres
+		for (int i = 0; i < m_lights.size(); i++) {
+			if (m_lights[i].GetVolumeShouldRender()) {
+				//set the position and scale
+				s_volumeTrans.SetPos(m_lights[i].GetPosition());
+				s_volumeTrans.SetScale(glm::vec3(m_lights[i].GetRadius()));
+
+				//make the mvp matrix
+				glm::mat4 mvp = m_vp * s_volumeTrans.GetGlobal();
+				s_lightVolumeShader->SetUniformMatrix("MVP", mvp);
+
+				//set the fragment shader uniforms
+				s_lightVolumeShader->SetUniform("u_lightColor", m_lights[i].GetColor());
+				s_lightVolumeShader->SetUniform("u_alpha", m_lights[i].GetVolumeTransparency());
+
+				//render
+				s_sphereMesh->GetVAOPointer()->Render();
+			}
+		}
+
+		//reset the polygon mode
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		//unbind the shader
+		s_lightVolumeShader->UnBind();
 	}
 }

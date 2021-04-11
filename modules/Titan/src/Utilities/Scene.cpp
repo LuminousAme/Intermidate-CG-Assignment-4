@@ -206,6 +206,15 @@ namespace Titan {
 		//and clear the scene buffer
 		sceneBuffer->Clear();
 
+		//send some data to the illbufer
+		std::vector<TTN_Light> lightsToSend = std::vector<TTN_Light>();
+		for (int i = 0; i < m_Lights.size(); i++) {
+			if (Has<TTN_Light>(m_Lights[i])) {
+				lightsToSend.push_back(Get<TTN_Light>(m_Lights[i]));
+			}
+		}
+		illBuffer->SetPointLightVector(lightsToSend);
+
 		//clear all the post processing effects
 		m_emptyEffect->Clear();
 		for (int i = 0; i < m_PostProcessingEffects.size(); i++)
@@ -368,6 +377,9 @@ namespace Titan {
 				viewMat, Get<TTN_Camera>(m_Cam).GetProj());
 		}
 
+		//draw any light volumes
+		illBuffer->RenderPointLightVolumes();
+
 		//unbind the empty effect now that we've fully rendered everything and run through all the post effect
 		m_emptyEffect->UnbindBuffer();
 
@@ -472,6 +484,8 @@ namespace Titan {
 		vp = Get<TTN_Camera>(m_Cam).GetProj();
 		glm::mat4 viewMat = glm::inverse(Get<TTN_Transform>(m_Cam).GetGlobal());
 		vp *= viewMat;
+
+		illBuffer->SetVPMatrix(vp);
 
 		//sort our render group
 		m_RenderGroup->sort<TTN_Renderer>([](const TTN_Renderer& l, const TTN_Renderer& r) {
