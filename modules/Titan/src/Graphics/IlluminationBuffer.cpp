@@ -165,7 +165,6 @@ namespace Titan {
 		glEnable(GL_DEPTH_TEST);
 		glCullFace(GL_BACK);
 
-
 		//ambient lighting and adding it to the existing images
 
 		//bind ambient shader

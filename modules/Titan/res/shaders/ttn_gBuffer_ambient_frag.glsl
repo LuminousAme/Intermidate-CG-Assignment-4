@@ -48,7 +48,7 @@ void main() {
 	ambient = mix(vec3(0.0), ambient, u_useAmbientLight);
 
     //add the ambient to the light accumulation 
-    vec3 result = (ambient + lightAccum.rbg);
+    vec3 result = (ambient + lightAccum.rgb);
 	//do tone mapping on it 
 	result = vec3(1.0) - exp(-result * u_exposure);
 	//gamma correction
