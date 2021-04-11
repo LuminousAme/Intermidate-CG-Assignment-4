@@ -162,8 +162,8 @@ int main() {
 			//set up toon shading
 			TTN_Scene::illBuffer->SetDiffuseRamp(TTN_AssetSystem::GetTexture2D("blue ramp"));
 			TTN_Scene::illBuffer->SetSpecularRamp(TTN_AssetSystem::GetTexture2D("blue ramp"));
-			TTN_Scene::illBuffer->SetUseDiffuseRamp(true);
-			TTN_Scene::illBuffer->SetUseSpecularRamp(true);
+			TTN_Scene::illBuffer->SetUseDiffuseRamp(false);
+			TTN_Scene::illBuffer->SetUseSpecularRamp(false);
 
 			//send the post effects to the scenes
 			gameScene->SetBloomEffect(bloomEffect);

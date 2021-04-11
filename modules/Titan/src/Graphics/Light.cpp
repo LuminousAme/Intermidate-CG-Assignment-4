@@ -31,6 +31,7 @@ namespace Titan {
 	void TTN_Light::SetColor(glm::vec3 color)
 	{
 		m_Color = color;
+		CalculateRadius();
 	}
 
 	//sets the ambient strenght of the light
@@ -69,8 +70,9 @@ namespace Titan {
 	void TTN_Light::CalculateRadius()
 	{
 		float lightMax = glm::max(glm::max(m_Color.r, m_Color.g), m_Color.b);
+
 		m_radius = -m_LinearAttenuation + glm::sqrt(m_LinearAttenuation * m_LinearAttenuation - 4 * m_QuadraticAttenuation * 
-			(m_ConstAttenutation - (256.0f/5.0f) * lightMax))
+			(m_ConstAttenutation - (256.0f/5.f) * lightMax))
 			 / (2 * m_QuadraticAttenuation);
 	}
 }

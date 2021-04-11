@@ -9,8 +9,7 @@ layout (binding = 2) uniform sampler2D s_specularTex;
 layout (binding = 3) uniform sampler2D s_positionTex;
 layout (binding = 4) uniform sampler2D s_emissiveTex;
 
-//get the light accumulation buffer
-layout (binding = 4) uniform sampler2D s_lightAccumTex;
+layout (binding = 15) uniform sampler2D s_illbuffer;
 
 //toon shading
 layout (binding = 9) uniform sampler2D s_DiffuseRamp;
@@ -86,17 +85,12 @@ void main() {
 
 	//attenuation
 	float dist = length(u_lightPos - fragPos);
-	float attenuation = 1.0f / (
+	float attenuation = 1.0 / (
 		u_AttenConst + 
 		u_AttenLine * dist +
 		u_AttenQuad * dist * dist);
 
-	vec3 result = ( ambient + // global ambient light
-		(diffuse + specular) // light factors from our single light, including shadow 
-		);
-
-	//add attenuation
-	result *= attenuation;
+	vec3 result = (0.5 * (ambient + diffuse + specular) * attenuation);
 
 	//if the alpha is less than 31% than it is our clear colour
     if (textureColor.a < 0.31)
@@ -106,5 +100,5 @@ void main() {
     }
 
 	//pass out the frag color
-	frag_color = vec4(result, textureColor.a);
+	frag_color = vec4(result + texture(s_illbuffer, screenUV).rgb, textureColor.a);
 }
