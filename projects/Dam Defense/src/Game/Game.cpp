@@ -2814,6 +2814,5 @@ void Game::ImGui()
 		illBuffer->SetExposure(exposure);
 	}
 
-
 	ImGui::End();
 }

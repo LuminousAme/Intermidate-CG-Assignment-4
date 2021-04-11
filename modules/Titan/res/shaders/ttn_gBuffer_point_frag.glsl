@@ -9,8 +9,7 @@ layout (binding = 2) uniform sampler2D s_specularTex;
 layout (binding = 3) uniform sampler2D s_positionTex;
 layout (binding = 4) uniform sampler2D s_emissiveTex;
 
-//get the light accumulation buffer
-layout (binding = 4) uniform sampler2D s_lightAccumTex;
+layout (binding = 15) uniform sampler2D s_illbuffer;
 
 //toon shading
 layout (binding = 9) uniform sampler2D s_DiffuseRamp;
@@ -106,5 +105,5 @@ void main() {
     }
 
 	//pass out the frag color
-	frag_color = vec4(result, textureColor.a);
+	frag_color = vec4(result + texture(s_illbuffer, screenUV).rgb, textureColor.a);
 }

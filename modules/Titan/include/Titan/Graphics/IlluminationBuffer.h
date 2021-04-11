@@ -12,6 +12,7 @@
 #include "Titan/Graphics/Mesh.h"
 #include "Titan/Utilities/Transform.h"
 #include "Titan/Graphics/ObjLoader.h"
+#include "Titan/Utilities/Backend.h"
 
 namespace Titan {
 	enum TTN_Lights

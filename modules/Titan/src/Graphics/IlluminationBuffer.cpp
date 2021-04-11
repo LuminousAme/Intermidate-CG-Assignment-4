@@ -9,14 +9,14 @@ namespace Titan {
 		//composite buffer
 		int index = int(m_buffers.size());
 		m_buffers.push_back(TTN_Framebuffer::Create());
-		m_buffers[index]->AddColorTarget(GL_RGB16F);
+		m_buffers[index]->AddColorTarget(GL_RGB8);
 		m_buffers[index]->AddDepthTarget();
 		m_buffers[index]->Init(width, height);
 
 		// illum buffer
 		index = int(m_buffers.size());
 		m_buffers.push_back(TTN_Framebuffer::Create());
-		m_buffers[index]->AddColorTarget(GL_RGBA8);
+		m_buffers[index]->AddColorTarget(GL_RGBA16F);
 		m_buffers[index]->AddDepthTarget();
 		m_buffers[index]->Init(width, height);
 
@@ -117,6 +117,54 @@ namespace Titan {
 			//unbind shader
 			m_shaders[TTN_Lights::DIRECTIONAL]->UnBind();
 		}
+
+		//point lights 
+		glCullFace(GL_FRONT);
+		glDisable(GL_DEPTH_TEST);
+
+		s_pointLightShader->Bind();
+		s_pointLightShader->SetUniform("u_CamPos", m_camPos);
+		glm::ivec2 windowSize = TTN_Backend::GetWindowSize();
+		s_pointLightShader->SetUniform("u_windowWidth", float(windowSize.x));
+		s_pointLightShader->SetUniform("u_windowHeight", float(windowSize.y));
+		m_diffuseRamp->Bind(9);
+		m_specularRamp->Bind(10);
+		s_pointLightShader->SetUniform("u_useAmbientLight", (int)m_useAmbient);
+		s_pointLightShader->SetUniform("u_useSpecularLight", (int)m_useSpecular);
+		s_pointLightShader->SetUniform("u_UseDiffuseRamp", int(m_useDiffuseRamp));
+		s_pointLightShader->SetUniform("u_useSpecularRamp", int(m_useSpecularRamp));
+		//bind the gBuffer for lighting
+		gBuffer->BindLighting();
+		m_buffers[1]->Bind();
+		m_buffers[1]->BindColorAsTexture(0, 15);
+
+		for (int i = 0; i < m_lights.size(); i++) {
+			s_pointLightShader->SetUniform("u_lightPos", m_lights[i].GetPosition());
+			s_pointLightShader->SetUniform("u_lightColor", m_lights[i].GetColor());
+			s_pointLightShader->SetUniform("u_ambStr", m_lights[i].GetAmbientStrength());
+			s_pointLightShader->SetUniform("u_specStr", m_lights[i].GetSpecularStrength());
+			s_pointLightShader->SetUniform("u_AttenConst", m_lights[i].GetConstantAttenuation());
+			s_pointLightShader->SetUniform("u_AttenLine", m_lights[i].GetLinearAttenuation());
+			s_pointLightShader->SetUniform("u_AttenQuad", m_lights[i].GetQuadraticAttenuation());
+			
+			//set the position and scale
+			s_volumeTrans.SetPos(m_lights[i].GetPosition());
+			s_volumeTrans.SetScale(glm::vec3(m_lights[i].GetRadius()));
+			
+			//make the mvp matrix
+			glm::mat4 mvp = m_vp * s_volumeTrans.GetGlobal();
+			s_pointLightShader->SetUniformMatrix("MVP", mvp);
+			
+
+			s_sphereMesh->GetVAOPointer()->Render();
+		}
+
+		m_buffers[1]->Unbind();
+		s_pointLightShader->UnBind();
+		gBuffer->UnbindLighting();
+		glEnable(GL_DEPTH_TEST);
+		glCullFace(GL_BACK);
+
 
 		//ambient lighting and adding it to the existing images
 
