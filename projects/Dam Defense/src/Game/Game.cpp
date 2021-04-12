@@ -111,6 +111,30 @@ void Game::Update(float deltaTime)
 
 		//increase the total time of the scene to make the water animated correctly
 		water_time += deltaTime / 2.5f;
+
+
+		lerpTimer += deltaTime;
+		for (int i = 0; i < m_Lights.size(); i++) {
+			glm::vec3 trans = Get<TTN_Light>(m_Lights[i]).GetPosition();
+			std::cout << lerpTimer << std::endl;
+			if (lerpTimer >= lerpTime) {
+				lerpDown = !lerpDown;
+				lerpUp = !lerpUp;
+				lerpTimer = 0.f;
+			}
+
+			if (lerpDown) {
+				Get<TTN_Light>(m_Lights[i]).SetPosition(glm::vec3(trans.x - deltaTime, trans.y, trans.z));
+			}
+			else if (lerpUp) {
+				Get<TTN_Light>(m_Lights[i]).SetPosition(glm::vec3(trans.x + deltaTime, trans.y, trans.z));
+
+			}
+
+			/*else {
+				Get<TTN_Light>(m_Lights[i]).SetPosition(glm::vec3(trans.x, trans.y + deltaTime, trans.z));
+			}*/
+		}
 	}
 
 	//game over stuff
@@ -131,28 +155,7 @@ void Game::Update(float deltaTime)
 	//call the update on ImGui
 	ImGui();
 
-	lerpTimer += deltaTime;
-	for (int i = 0; i < m_Lights.size(); i++) {
-		glm::vec3 trans = Get<TTN_Light>(m_Lights[i]).GetPosition();
-		std::cout << lerpTimer << std::endl;
-		if (lerpTimer >= lerpTime) {
-			lerpDown = !lerpDown;
-			lerpUp = !lerpUp;
-			lerpTimer = 0.f;
-		}
-		
-		if (lerpDown) {
-			Get<TTN_Light>(m_Lights[i]).SetPosition(glm::vec3(trans.x - deltaTime, trans.y , trans.z));
-		}
-		else if (lerpUp) {
-			Get<TTN_Light>(m_Lights[i]).SetPosition(glm::vec3(trans.x + deltaTime, trans.y , trans.z));
 
-		}
-
-		/*else {
-			Get<TTN_Light>(m_Lights[i]).SetPosition(glm::vec3(trans.x, trans.y + deltaTime, trans.z));
-		}*/
-	}
 
 	//get fps
 	//std::cout << "FPS: " << std::to_string(1.0f / deltaTime) << std::endl;
