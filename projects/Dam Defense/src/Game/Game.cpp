@@ -3032,7 +3032,7 @@ void Game::ImGui()
 		RenderOnlyNormals();
 	}
 
-	if (ImGui::Button("Render Only Normals")) {
+	if (ImGui::Button("Render Only Albedo/Material")) {
 		RenderOnlyAlbedo();
 	}
 
