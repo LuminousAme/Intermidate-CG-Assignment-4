@@ -94,6 +94,9 @@ namespace Titan {
 		//setup the materials
 		TTN_Material::Init();
 
+		//setup the illumination buffer
+		TTN_IlluminationBuffer::Setup();
+
 		//set up the audio engine
 		m_soundEngine.Init();
 		

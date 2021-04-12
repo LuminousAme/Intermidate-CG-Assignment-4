@@ -9,6 +9,10 @@
 #include "Titan/Graphics/UniformBuffer.h"
 #include "Titan/Graphics/GBuffer.h"
 #include "Titan/Graphics/Light.h"
+#include "Titan/Graphics/Mesh.h"
+#include "Titan/Utilities/Transform.h"
+#include "Titan/Graphics/ObjLoader.h"
+#include "Titan/Utilities/Backend.h"
 
 namespace Titan {
 	enum TTN_Lights
@@ -33,6 +37,8 @@ namespace Titan {
 		//Initializes framebuffer
 		//Overrides post effect Init
 		void Init(unsigned width, unsigned height) override;
+
+		static void Setup();
 
 		//Makes it so apply effect with a PostEffect does nothing for this object
 		void ApplyEffect(TTN_PostEffect::spostptr buffer) override { };
@@ -78,6 +84,18 @@ namespace Titan {
 		glm::vec3 GetRimColor() { return m_rimColor; }
 		float GetRimSize() { return m_rimSize; }
 		float GetEmissiveStrenght() { return m_emissiveStrenght; }
+
+		//hdr tone mapping
+		void SetExposure(float exposure) { m_exposure = exposure; }
+		float GetExposure() { return m_exposure; }
+
+		//point light stuff
+		void SetVPMatrix(glm::mat4 vp) { m_vp = vp; }
+		void SetPointLightVector(std::vector<TTN_Light> lights) { m_lights = lights; }
+		void RenderPointLightVolumes();
+
+		void SetVolumeShape(int shape) { m_volumeShape = shape; }
+		int GetVolumeShape() { return m_volumeShape; }
 		
 	private:
 		glm::mat4 m_viewMat;
@@ -88,6 +106,8 @@ namespace Titan {
 		glm::vec3 m_rimColor = glm::vec3(1.0f, 1.0f, 1.0f);
 		float m_rimSize = 0.4f;
 		float m_emissiveStrenght = 1.0f;
+
+		float m_exposure = 1.0f;
 
 		TTN_Framebuffer::sfboptr m_shadowBuffer;
 
@@ -105,5 +125,17 @@ namespace Titan {
 		TTN_Texture2D::st2dptr m_specularRamp;
 		bool m_useDiffuseRamp;
 		bool m_useSpecularRamp;
+
+		inline static TTN_Mesh::smptr s_sphereMesh = nullptr;
+		inline static TTN_Mesh::smptr s_cubeMesh = nullptr;
+		inline static TTN_Mesh::smptr s_coneMesh = nullptr;
+		inline static TTN_Shader::sshptr s_pointLightShader = nullptr;
+		inline static TTN_Shader::sshptr s_lightVolumeShader = nullptr;
+		inline static TTN_Transform s_volumeTrans = TTN_Transform(glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(1.0f));
+		glm::mat4 m_vp = glm::mat4(1.0f);
+
+		int m_volumeShape = 0; //0 - shere, 1 - cube, 2 - cone
+
+		std::vector<TTN_Light> m_lights = std::vector<TTN_Light>();
 	};
 }

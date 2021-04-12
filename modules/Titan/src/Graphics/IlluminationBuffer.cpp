@@ -9,14 +9,21 @@ namespace Titan {
 		//composite buffer
 		int index = int(m_buffers.size());
 		m_buffers.push_back(TTN_Framebuffer::Create());
-		m_buffers[index]->AddColorTarget(GL_RGBA8);
+		m_buffers[index]->AddColorTarget(GL_RGB8);
 		m_buffers[index]->AddDepthTarget();
 		m_buffers[index]->Init(width, height);
 
 		// illum buffer
 		index = int(m_buffers.size());
 		m_buffers.push_back(TTN_Framebuffer::Create());
-		m_buffers[index]->AddColorTarget(GL_RGBA8);
+		m_buffers[index]->AddColorTarget(GL_RGBA16F);
+		m_buffers[index]->AddDepthTarget();
+		m_buffers[index]->Init(width, height);
+
+		// illum buffer 2 (for ping pong)
+		index = int(m_buffers.size());
+		m_buffers.push_back(TTN_Framebuffer::Create());
+		m_buffers[index]->AddColorTarget(GL_RGBA16F);
 		m_buffers[index]->AddDepthTarget();
 		m_buffers[index]->Init(width, height);
 
@@ -32,6 +39,13 @@ namespace Titan {
 		m_shaders.push_back(TTN_Shader::Create());
 		m_shaders[index]->LoadShaderStageFromFile("shaders/Post/ttn_passthrough_vert.glsl", GL_VERTEX_SHADER);
 		m_shaders[index]->LoadShaderStageFromFile("shaders/ttn_gBuffer_ambient_frag.glsl", GL_FRAGMENT_SHADER);
+		m_shaders[index]->Link();
+
+		//load passthrough shader
+		index = int(m_shaders.size());
+		m_shaders.push_back(TTN_Shader::Create());
+		m_shaders[index]->LoadShaderStageFromFile("shaders/Post/ttn_passthrough_vert.glsl", GL_VERTEX_SHADER);
+		m_shaders[index]->LoadShaderStageFromFile("shaders/Post/ttn_passthrough_frag.glsl", GL_FRAGMENT_SHADER);
 		m_shaders[index]->Link();
 
 		//allocates sun buffer
@@ -54,11 +68,44 @@ namespace Titan {
 		TTN_PostEffect::Init(width, height);
 	}
 
+	void TTN_IlluminationBuffer::Setup()
+	{
+		//load the mesh
+		s_sphereMesh = TTN_ObjLoader::LoadFromFile("lightVolumeSphere.obj");
+		s_sphereMesh->SetUpVao();
+		s_coneMesh = TTN_ObjLoader::LoadFromFile("cone.obj");
+		s_coneMesh->SetUpVao();
+		s_cubeMesh = TTN_ObjLoader::LoadFromFile("cube.obj");
+		s_cubeMesh->SetUpVao();
+
+			//load the shaders
+		s_pointLightShader = TTN_Shader::Create();
+		s_pointLightShader->LoadShaderStageFromFile("shaders/ttn_gBuffer_point_vert.glsl", GL_VERTEX_SHADER);
+		s_pointLightShader->LoadShaderStageFromFile("shaders/ttn_gBuffer_point_frag.glsl", GL_FRAGMENT_SHADER);
+		s_pointLightShader->Link();
+
+		s_lightVolumeShader = TTN_Shader::Create();
+		s_lightVolumeShader->LoadShaderStageFromFile("shaders/ttn_gBuffer_point_vert.glsl", GL_VERTEX_SHADER);
+		s_lightVolumeShader->LoadShaderStageFromFile("shaders/ttn_point_light_volume_frag.glsl", GL_FRAGMENT_SHADER);
+		s_lightVolumeShader->Link();
+	}
+
 	void TTN_IlluminationBuffer::ApplyEffect(TTN_GBuffer::sgbufptr gBuffer)
 	{
+		//blit the gbuffer's depth over
+		glm::ivec2 windowSize = TTN_Backend::GetWindowSize();
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, gBuffer->GetHandle());
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_buffers[1]->GetHandle());
+		glBlitFramebuffer(0, 0, windowSize.x, windowSize.y, 0, 0, windowSize.x, windowSize.y, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, GL_NONE);
+
+		//don't write to the light's depth buffer
+		glDepthMask(GL_FALSE);
+
 		//send direcitonal light data
 		m_sunBuffer.SendData(reinterpret_cast<void*>(&m_sun), sizeof(TTN_DirectionalLight));
 
+		//directional light
 		if (m_sunEnabled) {
 			//binds directional light shader
 			m_shaders[TTN_Lights::DIRECTIONAL]->Bind();
@@ -97,7 +144,77 @@ namespace Titan {
 
 			//unbind shader
 			m_shaders[TTN_Lights::DIRECTIONAL]->UnBind();
+
+			//copy to spare buffer
+			m_shaders[m_shaders.size() - 1]->Bind();
+			m_buffers[1]->BindColorAsTexture(0, 0);
+
+			m_buffers[2]->RenderToFSQ();
+
+			m_buffers[1]->UnbindTexture(0);
+			m_shaders[m_shaders.size() - 1]->UnBind();
 		}
+
+		//point lights
+		for (int i = 0; i < m_lights.size(); i++) {
+			//glCullFace(GL_FRONT);
+
+			s_pointLightShader->Bind();
+			s_pointLightShader->SetUniform("u_CamPos", m_camPos);
+			s_pointLightShader->SetUniform("u_windowWidth", float(windowSize.x));
+			s_pointLightShader->SetUniform("u_windowHeight", float(windowSize.y));
+			m_diffuseRamp->Bind(9);
+			m_specularRamp->Bind(10);
+			s_pointLightShader->SetUniform("u_useAmbientLight", (int)m_useAmbient);
+			s_pointLightShader->SetUniform("u_useSpecularLight", (int)m_useSpecular);
+			s_pointLightShader->SetUniform("u_UseDiffuseRamp", int(m_useDiffuseRamp));
+			s_pointLightShader->SetUniform("u_useSpecularRamp", int(m_useSpecularRamp));
+			//bind the gBuffer for lighting
+			gBuffer->BindLighting();
+			m_buffers[1]->Bind();
+			m_buffers[2]->BindColorAsTexture(0, 15);
+
+			s_pointLightShader->SetUniform("u_lightPos", m_lights[i].GetPosition());
+			s_pointLightShader->SetUniform("u_lightColor", m_lights[i].GetColor());
+			s_pointLightShader->SetUniform("u_ambStr", m_lights[i].GetAmbientStrength());
+			s_pointLightShader->SetUniform("u_specStr", m_lights[i].GetSpecularStrength());
+			s_pointLightShader->SetUniform("u_AttenConst", m_lights[i].GetConstantAttenuation());
+			s_pointLightShader->SetUniform("u_AttenLine", m_lights[i].GetLinearAttenuation());
+			s_pointLightShader->SetUniform("u_AttenQuad", m_lights[i].GetQuadraticAttenuation());
+
+			//set the position and scale
+			s_volumeTrans.SetPos(m_lights[i].GetPosition());
+			s_volumeTrans.SetScale(glm::vec3(m_lights[i].GetRadius()));
+
+			//make the mvp matrix
+			glm::mat4 mvp = m_vp * s_volumeTrans.GetGlobal();
+			s_pointLightShader->SetUniformMatrix("MVP", mvp);
+
+			//s_sphereMesh->GetVAOPointer()->Render();
+			s_coneMesh->GetVAOPointer()->Render();
+			//s_cubeMesh->GetVAOPointer()->Render();
+
+			m_buffers[1]->Unbind();
+			m_buffers[2]->UnbindTexture(0);
+			s_pointLightShader->UnBind();
+			gBuffer->UnbindLighting();
+			//glEnable(GL_CULL_FACE);
+			//glCullFace(GL_BACK);
+
+			//copy to spare buffer
+			m_shaders[m_shaders.size() - 1]->Bind();
+			m_buffers[1]->BindColorAsTexture(0, 0);
+
+			m_buffers[2]->RenderToFSQ();
+
+			m_buffers[1]->UnbindTexture(0);
+			m_shaders[m_shaders.size() - 1]->UnBind();
+		}
+
+		//write to the depth buffer again
+		glDepthMask(GL_TRUE);
+
+		//ambient lighting and adding it to the existing images
 
 		//bind ambient shader
 		m_shaders[TTN_Lights::AMBIENT]->Bind();
@@ -111,6 +228,7 @@ namespace Titan {
 		m_buffers[0]->BindColorAsTexture(0, 5);
 
 		m_shaders[TTN_Lights::AMBIENT]->SetUniform("u_useAmbientLight", (int)m_useAmbient);
+		m_shaders[TTN_Lights::AMBIENT]->SetUniform("u_exposure", m_exposure);
 
 		m_buffers[0]->RenderToFSQ();
 
@@ -191,5 +309,43 @@ namespace Titan {
 	void TTN_IlluminationBuffer::EnableSun(bool enabled)
 	{
 		m_sunEnabled = enabled;
+	}
+
+	//renders any point lights to the currently bound framebuffer
+	void TTN_IlluminationBuffer::RenderPointLightVolumes()
+	{
+		//bind the shader
+		s_lightVolumeShader->Bind();
+
+		//set the polygon mode
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+		//render all of the spheres
+		for (int i = 0; i < m_lights.size(); i++) {
+			if (m_lights[i].GetVolumeShouldRender()) {
+				//set the position and scale
+				s_volumeTrans.SetPos(m_lights[i].GetPosition());
+				s_volumeTrans.SetScale(glm::vec3(m_lights[i].GetRadius()));
+
+				//make the mvp matrix
+				glm::mat4 mvp = m_vp * s_volumeTrans.GetGlobal();
+				s_lightVolumeShader->SetUniformMatrix("MVP", mvp);
+
+				//set the fragment shader uniforms
+				s_lightVolumeShader->SetUniform("u_lightColor", m_lights[i].GetColor());
+				s_lightVolumeShader->SetUniform("u_alpha", m_lights[i].GetVolumeTransparency());
+
+				//render
+				if(m_volumeShape == 0) s_sphereMesh->GetVAOPointer()->Render();
+				else if (m_volumeShape == 1) s_coneMesh->GetVAOPointer()->Render();
+				else if (m_volumeShape == 2) s_cubeMesh->GetVAOPointer()->Render();
+			}
+		}
+
+		//reset the polygon mode
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		//unbind the shader
+		s_lightVolumeShader->UnBind();
 	}
 }

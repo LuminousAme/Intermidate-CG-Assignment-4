@@ -271,6 +271,10 @@ protected:
 	bool jerryAlive;
 	bool julianAlive;
 
+	bool lerpUp;
+	bool lerpDown;
+	float lerpTime;
+	float lerpTimer;
 	/////// Player control data/////////
 	float cannonBallForce = 3600.0f / 10.0f;//a multiplier for the ammount of force should be applied to a cannonball when it is fired
 	float playerShootCooldown = 0.7f;//the ammount of time in seconds that the player has to wait between shots
@@ -475,6 +479,16 @@ protected:
 	bool m_useTextures = true;
 
 	bool showCGControls = false;
+
+	//variables for what deffered piece it is rendering
+	bool m_renderAll = true;
+	bool m_renderPositionsOnly = false;
+	bool m_renderNormalsOnly = false;
+	bool m_renderAlbedoOnly = false;
+	bool m_renderLightAccumulationBufferOnly = false;
+
+	//variable for if the light volumes are rendering
+	bool m_renderLightVolumes = true;
 };
 
 inline float SmoothStep(float t) {

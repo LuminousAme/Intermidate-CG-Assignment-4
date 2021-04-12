@@ -50,7 +50,6 @@ int main() {
 	audioEngine.LoadBus("Music", "{0b8d00f4-2fe5-4264-9626-a7a1988daf35}");
 	audioEngine.LoadBus("Dialogue", "{3a28ee67-f467-4886-b0a0-022829250bd5}");
 
-	
 	TTN_AudioEventHolder::saehptr ambience = TTN_AudioEventHolder::Create("Ambience", "{9bcbdc2b-af53-4de3-b171-8af04b8fb116}", 1);
 	audioEngine.GetListener();
 
@@ -163,8 +162,8 @@ int main() {
 			//set up toon shading
 			TTN_Scene::illBuffer->SetDiffuseRamp(TTN_AssetSystem::GetTexture2D("blue ramp"));
 			TTN_Scene::illBuffer->SetSpecularRamp(TTN_AssetSystem::GetTexture2D("blue ramp"));
-			TTN_Scene::illBuffer->SetUseDiffuseRamp(true);
-			TTN_Scene::illBuffer->SetUseSpecularRamp(true);
+			TTN_Scene::illBuffer->SetUseDiffuseRamp(false);
+			TTN_Scene::illBuffer->SetUseSpecularRamp(false);
 
 			//send the post effects to the scenes
 			gameScene->SetBloomEffect(bloomEffect);

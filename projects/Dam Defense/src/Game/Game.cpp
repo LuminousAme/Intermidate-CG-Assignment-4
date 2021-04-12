@@ -111,6 +111,30 @@ void Game::Update(float deltaTime)
 
 		//increase the total time of the scene to make the water animated correctly
 		water_time += deltaTime / 2.5f;
+
+
+		lerpTimer += deltaTime;
+		for (int i = 0; i < m_Lights.size(); i++) {
+			glm::vec3 trans = Get<TTN_Light>(m_Lights[i]).GetPosition();
+			std::cout << lerpTimer << std::endl;
+			if (lerpTimer >= lerpTime) {
+				lerpDown = !lerpDown;
+				lerpUp = !lerpUp;
+				lerpTimer = 0.f;
+			}
+
+			if (lerpDown) {
+				Get<TTN_Light>(m_Lights[i]).SetPosition(glm::vec3(trans.x - deltaTime, trans.y, trans.z));
+			}
+			else if (lerpUp) {
+				Get<TTN_Light>(m_Lights[i]).SetPosition(glm::vec3(trans.x + deltaTime, trans.y, trans.z));
+
+			}
+
+			/*else {
+				Get<TTN_Light>(m_Lights[i]).SetPosition(glm::vec3(trans.x, trans.y + deltaTime, trans.z));
+			}*/
+		}
 	}
 
 	//game over stuff
@@ -125,24 +149,13 @@ void Game::Update(float deltaTime)
 	//shop function
 	Shop(deltaTime);
 
-	/*
-	if (m_applyWarmLut) {
-		m_colorCorrectEffect->SetShouldApply(true);
-		m_colorCorrectEffect->SetCube(TTN_AssetSystem::GetLUT("Warm LUT"));
-		//and make sure the cool and customs luts are set not to render
-		m_applyCoolLut = false;
-		m_applyCustomLut = false;
-	}
-	else {
-		//if it's been turned of set the effect not to render
-		m_colorCorrectEffect->SetShouldApply(false);
-	}*/
-
 	//update the sound
 	engine.Update();
 
 	//call the update on ImGui
 	ImGui();
+
+
 
 	//get fps
 	//std::cout << "FPS: " << std::to_string(1.0f / deltaTime) << std::endl;
@@ -302,6 +315,97 @@ void Game::KeyDownChecks()
 	if (TTN_Application::TTN_Input::GetKey(TTN_KeyCode::C) && TTN_Application::TTN_Input::GetKeyDown(TTN_KeyCode::G)) {
 		showCGControls = !showCGControls;
 	}
+
+	if (TTN_Application::TTN_Input::GetKeyDown(TTN_KeyCode::KeyPadPlus)) {
+		if (m_Lights.size() <= 25) {
+			entt::entity newLight = CreateEntity();
+			m_Lights.push_back(newLight);
+
+			TTN_Light lightLight = TTN_Light(glm::vec3(1.0f), 0.5f, 0.5f, 0.0f, 2.0f, 8.0f);
+			int end = 0;
+	
+			for (int i = 0; i < m_Lights.size(); i++) {
+				if (i == 0)
+					lightLight.SetPosition(glm::vec3(0.0f, -0.8f, 10.0f));
+
+				else if (i == 1)
+					lightLight.SetPosition(glm::vec3(0.0f, -0.8f, 8.0f));
+
+				else if (i == 2)
+					lightLight.SetPosition(glm::vec3(0.0f, -0.8f, 6.0f));
+
+				else if (i == 3)
+					lightLight.SetPosition(glm::vec3(0.0f, -0.8f, 12.0f));
+
+				else if (i == 4)
+					lightLight.SetPosition(glm::vec3(0.0f, -0.8f, 14.0f));
+
+				//10.f
+				else if (i == 5)
+					lightLight.SetPosition(glm::vec3(2.0f, -0.8f, 10.0f));
+				else if (i == 6)
+					lightLight.SetPosition(glm::vec3(4.0f, -0.8f, 10.0f));
+				else if (i == 7)
+					lightLight.SetPosition(glm::vec3(-2.0f, -0.8f, 10.0f));
+				else if (i == 8)
+					lightLight.SetPosition(glm::vec3(-4.0f, -0.8f, 10.0f));
+
+				//8.f
+				else if (i == 9)
+					lightLight.SetPosition(glm::vec3(2.0f, -0.8f, 8.0f));
+
+				else if (i == 10)
+					lightLight.SetPosition(glm::vec3(4.0f, -0.8f, 8.0f));
+
+				else if (i == 11)
+					lightLight.SetPosition(glm::vec3(-2.0f, -0.8f, 8.0f));
+
+				else if (i == 12)
+					lightLight.SetPosition(glm::vec3(-4.0f, -0.8f, 8.0f));
+
+				//6.f
+				else if (i == 13)
+					lightLight.SetPosition(glm::vec3(2.0f, -0.8f, 6.0f));
+
+				else if (i == 14)
+					lightLight.SetPosition(glm::vec3(4.0f, -0.8f, 6.0f));
+
+				else if (i == 15)
+					lightLight.SetPosition(glm::vec3(-2.0f, -0.8f, 6.0f));
+
+				else if (i == 16)
+					lightLight.SetPosition(glm::vec3(-4.0f, -0.8f, 6.0f));
+
+				//12.f
+				else if (i == 17)
+					lightLight.SetPosition(glm::vec3(2.0f, -0.8f, 12.0f));
+
+				else if (i == 18)
+					lightLight.SetPosition(glm::vec3(-2.0f, -0.8f, 12.0f));
+
+				else if (i == 19)
+					lightLight.SetPosition(glm::vec3(4.0f, -0.8f, 12.0f));
+
+				else if (i == 20)
+					lightLight.SetPosition(glm::vec3(-4.0f, -0.8f, 12.0f));
+
+				//14.f
+				else if (i == 21)
+					lightLight.SetPosition(glm::vec3(2.0f, -0.8f, 14.0f));
+
+				else if (i == 22)
+					lightLight.SetPosition(glm::vec3(-2.0f, -0.8f, 14.0f));
+				else if (i == 23)
+					lightLight.SetPosition(glm::vec3(4.0f, -0.8f, 14.0f));
+				else if (i == 24)
+					lightLight.SetPosition(glm::vec3(-4.0f, -0.8f, 14.0f));
+			}
+
+			lightLight.SetVolumeShouldRender(true);
+
+			AttachCopy(newLight, lightLight);
+		}
+	}
 }
 
 //function to cehck for when a key is being pressed
@@ -385,7 +489,7 @@ void Game::SetUpAssets()
 	m_DialougeKilling5Birds = TTN_AudioEventHolder::Create("Dialouge Killing 5 birds", "{cf5fc3c7-5391-42e9-b862-0795f4e29590}", 1);
 	m_DialougeKilling10Birds = TTN_AudioEventHolder::Create("Dialogue Killing 10 Birds", "{4bfaf6a0-cfca-466b-af2c-eb8b3137171f}", 1);
 	m_DialougeKilling25Birds = TTN_AudioEventHolder::Create("Dialouge Killing 25 BIrds", "{86fedd33-1384-4242-8df4-66e193126f38}", 1);
-	
+
 	m_DialougeKillingJerry = TTN_AudioEventHolder::Create("Killing Jerry", "{8ed61f3c-f5a5-4f4b-b616-736672a84e34}", 1);
 	m_DialougeKillingJuilian = TTN_AudioEventHolder::Create("Killing Julian", "{3602d91a-014c-4346-808b-5feaffa769eb}", 1);
 	m_DialougeKillingJulianWhileJerryIsAlive = TTN_AudioEventHolder::Create("Killing Julian While Jerry Is Alive", "{7a299c08-45d4-44d6-a512-71cc6b8f0699}", 1);
@@ -914,6 +1018,10 @@ void Game::SetUpOtherData()
 //restarts the game
 void Game::RestartData()
 {
+	lerpDown = true;
+	lerpUp = false;
+
+	lerpTime = 3.0f;
 	//player data
 	rotAmmount = glm::vec2(0.0f);
 
@@ -937,7 +1045,8 @@ void Game::RestartData()
 
 	//bird data setup
 	BombTimer = 0.0f;
-
+	julianAlive = true;
+	jerryAlive = true;
 	//scene data setup
 	TTN_Scene::SetGravity(glm::vec3(0.0f, -9.8f / 10.0f, 0.0f));
 	m_paused = false;
@@ -1800,7 +1909,6 @@ void Game::Collisions() {
 			//if they do, then check they both have tags
 			if (TTN_Scene::Has<TTN_Tag>(entity1Ptr) && TTN_Scene::Has<TTN_Tag>(entity2Ptr)) {
 				//if they do, then do tag comparisons
-	
 
 				//if one is a boat and the other is a cannonball
 				if (cont && ((Get<TTN_Tag>(entity1Ptr).getLabel() == "Boat" && Get<TTN_Tag>(entity2Ptr).getLabel() == "Ball") ||
@@ -1881,10 +1989,9 @@ void Game::Collisions() {
 				}
 
 				//if one is a bird  and they are not jerry or julian  and the other is a boat
-				else if (cont && ((Get<TTN_Tag>(entity1Ptr).getLabel() == "Boat" && (Get<TTN_Tag>(entity2Ptr).getLabel() == "Bird" )) ||
+				else if (cont && ((Get<TTN_Tag>(entity1Ptr).getLabel() == "Boat" && (Get<TTN_Tag>(entity2Ptr).getLabel() == "Bird")) ||
 					((Get<TTN_Tag>(entity1Ptr).getLabel() == "Bird") && Get<TTN_Tag>(entity2Ptr).getLabel() == "Boat"))) {
 					//iterate through all of the boats through all of them until you find matching entity numbers
-					
 
 					std::vector<entt::entity>::iterator itt = boats.begin();
 					while (itt != boats.end()) {
@@ -1992,9 +2099,8 @@ void Game::Collisions() {
 					}
 
 					cont = false;
-
 				}
-				
+
 				//if one is jerry and other is a ball
 				else if (cont && (((Get<TTN_Tag>(entity1Ptr).getLabel() == "Bird" && Get<BirdComponent>(entity1Ptr).GetIsJerry()) && Get<TTN_Tag>(entity2Ptr).getLabel() == "Ball")) ||
 					(Get<TTN_Tag>(entity1Ptr).getLabel() == "Ball" && (Get<TTN_Tag>(entity2Ptr).getLabel() == "Bird" && Get<BirdComponent>(entity2Ptr).GetIsJerry()))) {
@@ -2047,7 +2153,7 @@ void Game::Collisions() {
 					(Get<TTN_Tag>(entity1Ptr).getLabel() == "Ball" && (Get<TTN_Tag>(entity2Ptr).getLabel() == "Bird" && Get<BirdComponent>(entity2Ptr).GetIsJulian() && jerryAlive))) {
 					m_DialougeKillingJulianWhileJerryIsAlive->SetNextPostion(glm::vec3(0.0f));
 					m_DialougeKillingJulianWhileJerryIsAlive->PlayFromQueue();
-					
+
 					//then iterate through the list of cannonballs until you find the one that's collided
 					std::vector<std::pair<entt::entity, bool>>::iterator it = cannonBalls.begin();
 					while (it != cannonBalls.end()) {
@@ -2094,7 +2200,7 @@ void Game::Collisions() {
 					(Get<TTN_Tag>(entity1Ptr).getLabel() == "Ball" && (Get<TTN_Tag>(entity2Ptr).getLabel() == "Bird" && Get<BirdComponent>(entity2Ptr).GetIsJulian() && !jerryAlive))) {
 					m_DialougeKillingJuilian->SetNextPostion(glm::vec3(0.0f));
 					m_DialougeKillingJuilian->PlayFromQueue();
-					
+
 					//then iterate through the list of cannonballs until you find the one that's collided
 					std::vector<std::pair<entt::entity, bool>>::iterator it = cannonBalls.begin();
 					while (it != cannonBalls.end()) {
@@ -2495,8 +2601,8 @@ void Game::BirdBomb()
 		}
 
 		//loop through and set the target for all of the birds
-			for (auto bird : birds)
-				Get<BirdComponent>(bird).SetTarget(currentTarget);
+		for (auto bird : birds)
+			Get<BirdComponent>(bird).SetTarget(currentTarget);
 	}
 }
 
@@ -2720,4 +2826,226 @@ void Game::ImGui()
 
 		ImGui::End();
 	}
+
+	ImGui::Begin("Point Light Controls");
+
+	std::vector<glm::vec3> lightPositions = std::vector<glm::vec3>(m_Lights.size());
+	std::vector<glm::vec3> lightColors = std::vector<glm::vec3>(m_Lights.size());
+	std::vector<float> lightAmbStr = std::vector<float>(m_Lights.size());
+	std::vector<float> lightSpecStr = std::vector<float>(m_Lights.size());
+	std::vector<float> lightConstAtten = std::vector<float>(m_Lights.size());
+	std::vector<float> lightLineAtten = std::vector<float>(m_Lights.size());
+	std::vector<float> lightQuadAtten = std::vector<float>(m_Lights.size());
+	std::vector<bool> lightVolumeShouldRender = std::vector<bool>(m_Lights.size());
+	std::vector<float> lightVolumeTransparency = std::vector<float>(m_Lights.size());
+
+	for (int i = 0; i < m_Lights.size(); i++) {
+		std::string lightName = "Point Light " + std::to_string(i);
+		if (ImGui::CollapsingHeader(lightName.c_str())) {
+			lightPositions[i] = Get<TTN_Light>(m_Lights[i]).GetPosition();
+			std::string posName = "Position " + std::to_string(i);
+			if (ImGui::SliderFloat3(posName.c_str(), glm::value_ptr(lightPositions[i]), -15.0f, 15.0f)) {
+				Get<TTN_Light>(m_Lights[i]).SetPosition(lightPositions[i]);
+			}
+
+			lightColors[i] = Get<TTN_Light>(m_Lights[i]).GetColor();
+			std::string colorName = "Color " + std::to_string(i);
+			if (ImGui::ColorEdit3(colorName.c_str(), glm::value_ptr(lightColors[i]))) {
+				Get<TTN_Light>(m_Lights[i]).SetColor(lightColors[i]);
+			}
+
+			lightAmbStr[i] = Get<TTN_Light>(m_Lights[i]).GetAmbientStrength();
+			std::string ambStrName = "Ambient Strength " + std::to_string(i);
+			if (ImGui::SliderFloat(ambStrName.c_str(), &lightAmbStr[i], 0.0f, 5.0f)) {
+				Get<TTN_Light>(m_Lights[i]).SetAmbientStrength(lightAmbStr[i]);
+			}
+
+			lightSpecStr[i] = Get<TTN_Light>(m_Lights[i]).GetSpecularStrength();
+			std::string specStrName = "Specular Strength " + std::to_string(i);
+			if (ImGui::SliderFloat(specStrName.c_str(), &lightSpecStr[i], 0.0f, 5.0f)) {
+				Get<TTN_Light>(m_Lights[i]).SetSpecularStrength(lightSpecStr[i]);
+			}
+
+			lightConstAtten[i] = Get<TTN_Light>(m_Lights[i]).GetConstantAttenuation();
+			std::string constAttenName = "Attentuation Constant " + std::to_string(i);
+			if (ImGui::SliderFloat(constAttenName.c_str(), &lightConstAtten[i], 0.0f, 10.0f)) {
+				Get<TTN_Light>(m_Lights[i]).SetConstantAttenuation(lightConstAtten[i]);
+			}
+
+			lightLineAtten[i] = Get<TTN_Light>(m_Lights[i]).GetLinearAttenuation();
+			std::string lineAttenName = "Attentuation Linear " + std::to_string(i);
+			if (ImGui::SliderFloat(lineAttenName.c_str(), &lightLineAtten[i], 0.0f, 10.0f)) {
+				Get<TTN_Light>(m_Lights[i]).SetLinearAttenuation(lightLineAtten[i]);
+			}
+
+			lightQuadAtten[i] = Get<TTN_Light>(m_Lights[i]).GetQuadraticAttenuation();
+			std::string quadAttenName = "Attentuation Quadratic " + std::to_string(i);
+			if (ImGui::SliderFloat(quadAttenName.c_str(), &lightQuadAtten[i], 0.0f, 10.0f)) {
+				Get<TTN_Light>(m_Lights[i]).SetQuadraticAttenuation(lightQuadAtten[i]);
+			}
+
+			lightVolumeShouldRender[i] = Get<TTN_Light>(m_Lights[i]).GetVolumeShouldRender();
+			bool temp = lightVolumeShouldRender[i];
+			std::string volumeShouldrenderName = "Volume " + std::to_string(i) + " should render";
+			if (ImGui::Checkbox(volumeShouldrenderName.c_str(), &temp)) {
+				lightVolumeShouldRender[i] = temp;
+				Get<TTN_Light>(m_Lights[i]).SetVolumeShouldRender(lightVolumeShouldRender[i]);
+			}
+
+			lightVolumeTransparency[i] = Get<TTN_Light>(m_Lights[i]).GetVolumeTransparency();
+			std::string lightVolumeAlphaName = "Volume " + std::to_string(i) + "'s transparency";
+			if (ImGui::SliderFloat(lightVolumeAlphaName.c_str(), &lightVolumeTransparency[i], 0.0f, 1.0f)) {
+				Get<TTN_Light>(m_Lights[i]).SetVolumeTransparency(lightVolumeTransparency[i]);
+			}
+		}
+	}
+
+	if (m_Lights.size() <= 25) {
+		if (ImGui::Button("Make new point light")) {
+			entt::entity newLight = CreateEntity();
+			m_Lights.push_back(newLight);
+
+			TTN_Light lightLight = TTN_Light(glm::vec3(1.0f), 0.5f, 0.5f, 0.0f, 2.0f, 8.0f);
+			int end = 0;
+			/*	if (m_Lights.size() > 1) {
+					for (int i = 0; i < m_Lights.size(); i++) {
+						end = i;
+					}
+
+					lightLight.SetPosition(glm::vec3(Get<TTN_Light>(m_Lights[end - 1]).GetPosition().x + 0.4f, 1.0f, 5.0f));
+				}
+				else
+					lightLight.SetPosition(glm::vec3(-4.0f, 1.0f, 5.0f));*/
+			for (int i = 0; i < m_Lights.size(); i++) {
+				if (i == 0)
+					lightLight.SetPosition(glm::vec3(0.0f, -0.8f, 10.0f));
+
+				else if (i == 1)
+					lightLight.SetPosition(glm::vec3(0.0f, -0.8f, 8.0f));
+
+				else if (i == 2)
+					lightLight.SetPosition(glm::vec3(0.0f, -0.8f, 6.0f));
+
+				else if (i == 3)
+					lightLight.SetPosition(glm::vec3(0.0f, -0.8f, 12.0f));
+
+				else if (i == 4)
+					lightLight.SetPosition(glm::vec3(0.0f, -0.8f, 14.0f));
+
+				//10.f
+				else if (i == 5)
+					lightLight.SetPosition(glm::vec3(2.0f, -0.8f, 10.0f));
+				else if (i == 6)
+					lightLight.SetPosition(glm::vec3(4.0f, -0.8f, 10.0f));
+				else if (i == 7)
+					lightLight.SetPosition(glm::vec3(-2.0f, -0.8f, 10.0f));
+				else if (i == 8)
+					lightLight.SetPosition(glm::vec3(-4.0f, -0.8f, 10.0f));
+
+				//8.f
+				else if (i == 9)
+					lightLight.SetPosition(glm::vec3(2.0f, -0.8f, 8.0f));
+
+				else if (i == 10)
+					lightLight.SetPosition(glm::vec3(4.0f, -0.8f, 8.0f));
+
+				else if (i == 11)
+					lightLight.SetPosition(glm::vec3(-2.0f, -0.8f, 8.0f));
+
+				else if (i == 12)
+					lightLight.SetPosition(glm::vec3(-4.0f, -0.8f, 8.0f));
+
+				//6.f
+				else if (i == 13)
+					lightLight.SetPosition(glm::vec3(2.0f, -0.8f, 6.0f));
+
+				else if (i == 14)
+					lightLight.SetPosition(glm::vec3(4.0f, -0.8f, 6.0f));
+
+				else if (i == 15)
+					lightLight.SetPosition(glm::vec3(-2.0f, -0.8f, 6.0f));
+
+				else if (i == 16)
+					lightLight.SetPosition(glm::vec3(-4.0f, -0.8f, 6.0f));
+
+				//12.f
+				else if (i == 17)
+					lightLight.SetPosition(glm::vec3(2.0f, -0.8f, 12.0f));
+
+				else if (i == 18)
+					lightLight.SetPosition(glm::vec3(-2.0f, -0.8f, 12.0f));
+
+				else if (i == 19)
+					lightLight.SetPosition(glm::vec3(4.0f, -0.8f, 12.0f));
+
+				else if (i == 20)
+					lightLight.SetPosition(glm::vec3(-4.0f, -0.8f, 12.0f));
+
+				//14.f
+				else if (i == 21)
+					lightLight.SetPosition(glm::vec3(2.0f, -0.8f, 14.0f));
+
+				else if (i == 22)
+					lightLight.SetPosition(glm::vec3(-2.0f, -0.8f, 14.0f));
+				else if (i == 23)
+					lightLight.SetPosition(glm::vec3(4.0f, -0.8f, 14.0f));
+				else if (i == 24)
+					lightLight.SetPosition(glm::vec3(-4.0f, -0.8f, 14.0f));
+			}
+
+			lightLight.SetVolumeShouldRender(true);
+
+			AttachCopy(newLight, lightLight);
+		}
+	}
+
+
+
+	ImGui::Text("Tone Mapping");
+
+	float exposure = illBuffer->GetExposure();
+	if (ImGui::SliderFloat("Exposure", &exposure, 0.01f, 20.0f)) {
+		illBuffer->SetExposure(exposure);
+	}
+
+	ImGui::End();
+
+	ImGui::Begin("CG Assingment 4 Debug keys");
+
+	if (ImGui::Button("Render Composed Scene")) {
+		RenderCompositedScene();
+	}
+
+	if (ImGui::Button("Render Light Volumes")) {
+		m_renderLightVolumes = !m_renderLightVolumes;
+
+		for (int i = 0; i < m_Lights.size(); i++) {
+			Get<TTN_Light>(m_Lights[i]).SetVolumeShouldRender(m_renderLightVolumes);
+		}
+	}
+
+	if (ImGui::Button("Render Only Position")) {
+		RenderOnlyPositions();
+	}
+
+	if (ImGui::Button("Render Only Normals")) {
+		RenderOnlyNormals();
+	}
+
+	if (ImGui::Button("Render Only Albedo/Material")) {
+		RenderOnlyAlbedo();
+	}
+
+	if (ImGui::Button("Render Light Acculumation Buffer")) {
+		RenderOnlyLightAccululation();
+	}
+
+	if (ImGui::Button("Toogle Volume Shape")) {
+		int shape = illBuffer->GetVolumeShape();
+		if (shape == 2) shape = 0;
+		else shape++;
+		illBuffer->SetVolumeShape(shape);
+	}
+
+	ImGui::End();
 }
