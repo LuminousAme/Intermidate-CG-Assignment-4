@@ -1,4 +1,4 @@
-//Titan Engine, by Atlas X Games 
+//Titan Engine, by Atlas X Games
 // Light.cpp - source file for the class that represents lights in a scene
 
 //precompile header
@@ -25,6 +25,8 @@ namespace Titan {
 		m_ConstAttenutation(constantAttenuation), m_LinearAttenuation(linearAttenuation), m_QuadraticAttenuation(quadraticAttenuation)
 	{
 		CalculateRadius();
+		/*lerpDown = true;
+		lerpUp = false;*/
 	}
 
 	//sets the light's colour
@@ -71,8 +73,8 @@ namespace Titan {
 	{
 		float lightMax = glm::max(glm::max(m_Color.r, m_Color.g), m_Color.b);
 
-		m_radius = -m_LinearAttenuation + glm::sqrt(m_LinearAttenuation * m_LinearAttenuation - 4 * m_QuadraticAttenuation * 
-			(m_ConstAttenutation - (256.0f/5.f) * lightMax))
-			 / (2 * m_QuadraticAttenuation);
+		m_radius = -m_LinearAttenuation + glm::sqrt(m_LinearAttenuation * m_LinearAttenuation - 4 * m_QuadraticAttenuation *
+			(m_ConstAttenutation - (256.0f / 5.f) * lightMax))
+			/ (2 * m_QuadraticAttenuation);
 	}
 }
