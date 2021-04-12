@@ -155,8 +155,7 @@ namespace Titan {
 			m_shaders[m_shaders.size() - 1]->UnBind();
 		}
 
-	
-		//point lights 
+		//point lights
 		for (int i = 0; i < m_lights.size(); i++) {
 			//glCullFace(GL_FRONT);
 
@@ -182,16 +181,18 @@ namespace Titan {
 			s_pointLightShader->SetUniform("u_AttenConst", m_lights[i].GetConstantAttenuation());
 			s_pointLightShader->SetUniform("u_AttenLine", m_lights[i].GetLinearAttenuation());
 			s_pointLightShader->SetUniform("u_AttenQuad", m_lights[i].GetQuadraticAttenuation());
-			
+
 			//set the position and scale
 			s_volumeTrans.SetPos(m_lights[i].GetPosition());
 			s_volumeTrans.SetScale(glm::vec3(m_lights[i].GetRadius()));
-			
+
 			//make the mvp matrix
 			glm::mat4 mvp = m_vp * s_volumeTrans.GetGlobal();
 			s_pointLightShader->SetUniformMatrix("MVP", mvp);
-			
-			s_sphereMesh->GetVAOPointer()->Render();
+
+			//s_sphereMesh->GetVAOPointer()->Render();
+			s_coneMesh->GetVAOPointer()->Render();
+			//s_cubeMesh->GetVAOPointer()->Render();
 
 			m_buffers[1]->Unbind();
 			m_buffers[2]->UnbindTexture(0);
@@ -209,7 +210,6 @@ namespace Titan {
 			m_buffers[1]->UnbindTexture(0);
 			m_shaders[m_shaders.size() - 1]->UnBind();
 		}
-
 
 		//write to the depth buffer again
 		glDepthMask(GL_TRUE);

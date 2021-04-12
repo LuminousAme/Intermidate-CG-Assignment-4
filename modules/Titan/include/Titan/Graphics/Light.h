@@ -63,6 +63,9 @@ namespace Titan {
 		float m_QuadraticAttenuation;
 		glm::vec3 m_position = glm::vec3(0.0f);
 
+		bool lerpUp;
+		bool lerpDown;
+
 		float m_radius;
 		void CalculateRadius();
 
