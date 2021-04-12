@@ -71,12 +71,12 @@ namespace Titan {
 	void TTN_IlluminationBuffer::Setup()
 	{
 		//load the mesh
-		/*s_sphereMesh = TTN_ObjLoader::LoadFromFile("lightVolumeSphere.obj");
-		s_sphereMesh->SetUpVao();*/
+		s_sphereMesh = TTN_ObjLoader::LoadFromFile("lightVolumeSphere.obj");
+		s_sphereMesh->SetUpVao();
 		s_coneMesh = TTN_ObjLoader::LoadFromFile("cone.obj");
 		s_coneMesh->SetUpVao();
-		/*	s_cubeMesh = TTN_ObjLoader::LoadFromFile("cube.obj");
-			s_cubeMesh->SetUpVao();*/
+		s_cubeMesh = TTN_ObjLoader::LoadFromFile("cube.obj");
+		s_cubeMesh->SetUpVao();
 
 			//load the shaders
 		s_pointLightShader = TTN_Shader::Create();
@@ -336,9 +336,9 @@ namespace Titan {
 				s_lightVolumeShader->SetUniform("u_alpha", m_lights[i].GetVolumeTransparency());
 
 				//render
-				//s_sphereMesh->GetVAOPointer()->Render();
-				s_coneMesh->GetVAOPointer()->Render();
-				//s_cubeMesh->GetVAOPointer()->Render();
+				if(m_volumeShape == 0) s_sphereMesh->GetVAOPointer()->Render();
+				else if (m_volumeShape == 1) s_coneMesh->GetVAOPointer()->Render();
+				else if (m_volumeShape == 2) s_cubeMesh->GetVAOPointer()->Render();
 			}
 		}
 

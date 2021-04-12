@@ -93,6 +93,9 @@ namespace Titan {
 		void SetVPMatrix(glm::mat4 vp) { m_vp = vp; }
 		void SetPointLightVector(std::vector<TTN_Light> lights) { m_lights = lights; }
 		void RenderPointLightVolumes();
+
+		void SetVolumeShape(int shape) { m_volumeShape = shape; }
+		int GetVolumeShape() { return m_volumeShape; }
 		
 	private:
 		glm::mat4 m_viewMat;
@@ -130,6 +133,8 @@ namespace Titan {
 		inline static TTN_Shader::sshptr s_lightVolumeShader = nullptr;
 		inline static TTN_Transform s_volumeTrans = TTN_Transform(glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(1.0f));
 		glm::mat4 m_vp = glm::mat4(1.0f);
+
+		int m_volumeShape = 0; //0 - shere, 1 - cube, 2 - cone
 
 		std::vector<TTN_Light> m_lights = std::vector<TTN_Light>();
 	};

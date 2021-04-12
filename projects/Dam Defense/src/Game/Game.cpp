@@ -2824,9 +2824,7 @@ void Game::ImGui()
 		ImGui::End();
 	}
 
-	ImGui::Begin("CG Assingment 4 Controls");
-
-	ImGui::Text("Point Lights");
+	ImGui::Begin("Point Light Controls");
 
 	std::vector<glm::vec3> lightPositions = std::vector<glm::vec3>(m_Lights.size());
 	std::vector<glm::vec3> lightColors = std::vector<glm::vec3>(m_Lights.size());
@@ -2998,11 +2996,52 @@ void Game::ImGui()
 		}
 	}
 
+
+
 	ImGui::Text("Tone Mapping");
 
 	float exposure = illBuffer->GetExposure();
 	if (ImGui::SliderFloat("Exposure", &exposure, 0.01f, 20.0f)) {
 		illBuffer->SetExposure(exposure);
+	}
+
+	ImGui::End();
+
+	ImGui::Begin("CG Assingment 4 Debug keys");
+
+	if (ImGui::Button("Render Composed Scene")) {
+		RenderCompositedScene();
+	}
+
+	if (ImGui::Button("Render Light Volumes")) {
+		m_renderLightVolumes = !m_renderLightVolumes;
+
+		for (int i = 0; i < m_Lights.size(); i++) {
+			Get<TTN_Light>(m_Lights[i]).SetVolumeShouldRender(m_renderLightVolumes);
+		}
+	}
+
+	if (ImGui::Button("Render Only Position")) {
+		RenderOnlyPositions();
+	}
+
+	if (ImGui::Button("Render Only Normals")) {
+		RenderOnlyNormals();
+	}
+
+	if (ImGui::Button("Render Only Normals")) {
+		RenderOnlyAlbedo();
+	}
+
+	if (ImGui::Button("Render Light Acculumation Buffer")) {
+		RenderOnlyLightAccululation();
+	}
+
+	if (ImGui::Button("Toogle Volume Shape")) {
+		int shape = illBuffer->GetVolumeShape();
+		if (shape == 2) shape = 0;
+		else shape++;
+		illBuffer->SetVolumeShape(shape);
 	}
 
 	ImGui::End();
